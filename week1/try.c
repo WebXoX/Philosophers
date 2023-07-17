@@ -48,6 +48,7 @@ void	setdolist(to_do *dolist, char *argc[], int i)
 	else
 		dolist->meal_plan = 0;
 }
+
 void	print(to_do dolist)
 {
 	printf("\n_____________________________");
