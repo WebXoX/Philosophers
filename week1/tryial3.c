@@ -172,8 +172,8 @@ void threads( to_do *dolist, t_fork *fork, int i)
 		else
 			(dolist+ count)->left = &*(fork + count - 1);
 
-		if (pthread_mutex_init(&(dolist+count)->fork,NULL) != 0)
-				return  ;
+		// if (pthread_mutex_init(&(dolist+count)->fork,NULL) != 0)
+		// 		return  ;
 		printf("\nstarting of thread %d\n",(dolist + count)->numb_philo);
 		if (pthread_create(&(dolist+count)->t,NULL,&routine,((dolist+ count))) != 0)
 				return  ;
@@ -182,8 +182,8 @@ void threads( to_do *dolist, t_fork *fork, int i)
 	while (++count < i)
 	{
 		pthread_join((dolist + count)->t,NULL);
-		if (pthread_mutex_destroy(&(dolist+count)->fork) != 0)
-				return  ;
+		// if (pthread_mutex_destroy(&(dolist+count)->fork) != 0)
+		// 		return  ;
 		printf("\nend of thread %d",(dolist+count)->numb_philo);
 	}
 }
