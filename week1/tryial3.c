@@ -4,6 +4,7 @@
 #include <strings.h>
 #include <pthread.h>
 #include <sys/time.h>
+
 typedef struct t_fork
 {
 	pthread_mutex_t fork;
@@ -34,7 +35,6 @@ typedef struct to_do
 	struct timezone y;
 }				to_do;
 
-
 void	timed( to_do * doa, long int *count )
 {
 		gettimeofday(&(doa->m), &(doa->y));
@@ -45,6 +45,7 @@ void	timed( to_do * doa, long int *count )
 			// printf("\n%ld\n",*count/1000);
 		}
 }
+
 to_do *ft_lst_last(to_do *dolist){
 	int i;
 
@@ -58,6 +59,7 @@ to_do *ft_lst_last(to_do *dolist){
 	i--;
 	return(&*(dolist));
 }
+
 int	checker(char *ptr[])
 {
 	int	i;
@@ -73,6 +75,7 @@ int	checker(char *ptr[])
 	}
 	return (1);
 }
+
 void	setdolist(to_do *dolist, char *argc[], int i)
 {
 	dolist->numb_philo = i+1;
@@ -84,6 +87,7 @@ void	setdolist(to_do *dolist, char *argc[], int i)
 	else
 		dolist->meal_plan = 0;
 }
+
 void	print(to_do dolist)
 {
 	printf("\n_____________________________");
@@ -101,6 +105,7 @@ void	*timz()
     printf("hi thread here");
 	return 0;
 }
+
 void statusprint(to_do *dolist)
 {
 
@@ -108,8 +113,8 @@ void statusprint(to_do *dolist)
 	if (dolist->currentflag == 1)
 	{
 		printf("%d has taken a fork\n", dolist->numb_philo);
-		printf("%ld ms: %d has taken a fork\n",dolist->m.tv_sec * 1000 + dolist->m.tv_usec / 1000 - dolist->time_birth, dolist->numb_philo);
-		printf("%d ms: %d is eating",dolist->m.tv_sec * 1000 + dolist->m.tv_usec / 1000 - dolist->time_birth,  dolist->numb_philo);
+		printf("%ld ms: %d has taken a fork\n",(dolist->m.tv_sec * 1000 + dolist->m.tv_usec / 1000 - dolist->time_birth), dolist->numb_philo);
+		printf("%ld ms: %d is eating",dolist->m.tv_sec * 1000 + dolist->m.tv_usec / 1000 - dolist->time_birth,  dolist->numb_philo);
 	}
 	if (dolist->currentflag == 2)
 		printf("%d is sleeping", dolist->numb_philo);
@@ -118,9 +123,10 @@ void statusprint(to_do *dolist)
 	if (dolist->currentflag == 4)
 		printf("%d is died", dolist->numb_philo);
 }
+
 void activity(  to_do * doa, long int *count,long int *limit  )
 {
-	// gettimeofday(&(doa->m), &(doa->y));
+	gettimeofday(&(doa->m), &(doa->y));
 	doa->currentflag = 1;
 	statusprint(doa);
 		*count = (doa->m).tv_sec * 1000 + (doa->m).tv_usec / 1000  - (doa->time_birth);
@@ -142,12 +148,13 @@ void* routine(void *test)
 	// printf("eating :%ld\n",wow.counttime_eat);
 
 	activity(&wow, &wow.counttime_eat, &wow.time_eat);
-	activity(&wow, &wow.counttime_sleep, &wow.time_sleep);
-	activity(&wow, &wow.counttime_thinking, &wow.time_thinking);
+	// activity(&wow, &wow.counttime_eat, &wow.time_eat);
+	// activity(&wow, &wow.counttime_eat, &wow.time_eat);
+	// activity(&wow, &wow.counttime_sleep, &wow.time_sleep);
+	// activity(&wow, &wow.counttime_thinking, &wow.time_thinking);
 	// printf("eating :%ld\n",wow.counttime_eat);
 	// printf("\nend-----------------\n\n");3
-
-	// return ;
+	return (void *)0;
 }
 
 void threads( to_do *dolist, t_fork *fork, int i)
@@ -160,7 +167,7 @@ void threads( to_do *dolist, t_fork *fork, int i)
 		if(count + 1  == i)
 			(dolist+ count)->left = &*(fork);
 		else
-			(dolist+ count)->right = &*(fork +count + 1 );
+			(dolist+ count)->right = &*(fork +count + 1);
 		if(count == 0)
 			(dolist+ count)->left = &*(fork + i - 1);
 		else
@@ -168,17 +175,17 @@ void threads( to_do *dolist, t_fork *fork, int i)
 
 		if (pthread_mutex_init(&(dolist+count)->fork,NULL) != 0)
 				return  ;
-		printf("\nstarting of thread %d\n",(dolist+count)->numb_philo);
+		printf("\nstarting of thread %d\n",(dolist + count)->numb_philo);
 		if (pthread_create(&(dolist+count)->t,NULL,&routine,((dolist+ count))) != 0)
 				return  ;
 	}
 	count = -1;
-	while (++count <i){
-		pthread_join((dolist+count)->t,NULL);
+	while (++count < i)
+	{
+		pthread_join((dolist + count)->t,NULL);
 		if (pthread_mutex_destroy(&(dolist+count)->fork) != 0)
 				return  ;
 		printf("\nend of thread %d",(dolist+count)->numb_philo);
-
 	}
 }
 
@@ -197,12 +204,15 @@ int	main(int argv, char *argc[])
         dolist = malloc(sizeof( to_do)*(atoi(argc[1])));
         forkes = malloc(sizeof( t_fork)*(atoi(argc[1])));
 		i = -1;
+		
+			gettimeofday(&(m), &(y));
 		while (++i < atoi(argc[1]) )
 		{
 			setdolist(&(dolist[i]), argc, i);
 			dolist[i].time_birth = m.tv_sec * 1000 + m.tv_usec/1000 ;
+			printf("\n%ld",dolist[i].time_birth);
 			print((dolist[i]));
 		}
-		threads(dolist,atoi(argc[1]));
+		threads(dolist,forkes,atoi(argc[1]));
 	}
 }
