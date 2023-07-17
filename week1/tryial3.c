@@ -13,10 +13,13 @@ typedef struct to_do
 	long int		time_current;
 	long int		time_eat;
 	long int		time_sleep;
+	long int		time_thinking;
 	long int		time_die;
 	long int		counttime_eat;
 	long int		counttime_sleep;
+	long int		counttime_thinking;
 	long int		counttime_die;
+	int 			currentflag;
 	int				meal_plan;
     pthread_t		t;
 	pthread_mutex_t fork;
@@ -101,14 +104,32 @@ void	*timz()
     printf("hi thread here");
 	return 0;
 }
+void statusprint(to_do *dolist)
+{
+
+	printf("\n%ld ms: ", dolist->m.tv_sec * 1000 + dolist->m.tv_usec / 1000 - dolist->time_birth);
+	if (dolist->currentflag == 1)
+	{
+		printf("%d has taken a fork\n", dolist->numb_philo);
+		printf("%ld ms: %d has taken a fork\n",dolist->m.tv_sec * 1000 + dolist->m.tv_usec / 1000 - dolist->time_birth, dolist->numb_philo);
+		printf("%d ms: %d is eating",dolist->m.tv_sec * 1000 + dolist->m.tv_usec / 1000 - dolist->time_birth,  dolist->numb_philo);
+	}
+	if (dolist->currentflag == 2)
+		printf("%d is sleeping", dolist->numb_philo);
+	if (dolist->currentflag == 3)
+		printf("%d is thinking", dolist->numb_philo);
+	if (dolist->currentflag == 4)
+		printf("%d is died", dolist->numb_philo);
+}
 void eating(  to_do * doa, long int *count )
 {
-	gettimeofday(&(doa->m), &(doa->y));
-		*count =  (doa->m).tv_usec  - (doa->time_birth);
-		while(doa->counttime_eat/1000 < doa->time_eat){
+	// gettimeofday(&(doa->m), &(doa->y));
+	doa->currentflag = 1;
+	statusprint(doa);
+		*count = (doa->m).tv_sec * 1000 + (doa->m).tv_usec / 1000  - (doa->time_birth);
+		while( *count < doa->time_eat){
 			gettimeofday(&(doa->m), &(doa->y));
-			// printf("eating :%ld\n",*count);
-			*count =   (doa->m).tv_usec/1000  ;
+			*count = (doa->m).tv_sec * 1000 + (doa->m).tv_usec/1000  - (doa->time_birth);
 		}
 }
 
@@ -180,15 +201,15 @@ int	main(int argv, char *argc[])
 		while (++i < atoi(argc[1]) )
 		{
 			setdolist(&(dolist[i]), argc, i);
-			dolist[i].time_birth = m.tv_usec/1000 ;
+			dolist[i].time_birth = m.tv_sec * 1000 + m.tv_usec/1000 ;
 			print((dolist[i]));
 		}
 	// 	while(1)
 	// 	{gettimeofday (&m, &y);
-	// 	printf("\n%lld :: \n",m.tv_usec/1000 );
+		// printf("\n%lld :: \n",m.tv_sec*100 );
 	// }
-	eating(&dolist, &dolist->counttime_eat);
+	// eating(dolist, &dolist->counttime_eat);
 
-		// threads(dolist,atoi(argc[1]));
+		threads(dolist,atoi(argc[1]));
 	}
 }
