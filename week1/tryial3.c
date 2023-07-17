@@ -5,31 +5,46 @@
 #include <pthread.h>
 #include <sys/time.h>
 
-typedef struct t_neighbours
-{
-    to_do *past;
-	to_do *present;
-    to_do *future;
-}       t_neighbours;
 typedef struct to_do
 {
 
-	int			numb_philo;
-	long int	time_birth;
-	long int	time_current;
-	int			time_eat;
-	int			time_sleep;
-	int			time_die;
-	int			meal_plan;
-    pthread_t	t;
-	pthread_mutex_t m;
-	t_neighbours test;
-
+	int				numb_philo;
+	long int		time_birth;
+	long int		time_current;
+	long int		time_eat;
+	long int		time_sleep;
+	long int		time_die;
+	long int		counttime_eat;
+	long int		counttime_sleep;
+	long int		counttime_die;
+	int				meal_plan;
+    pthread_t		t;
+	pthread_mutex_t fork;
+	struct to_do 	*past;
+	struct to_do 	*present;
+    struct to_do 	*future;
+	struct timeval 	m;
+	struct timezone y;
 }				to_do;
 
 
+typedef struct t_timed
+{
+	struct timeval 	m;
+	struct timezone y;
+}				t_timed;
 
 
+void	timed( to_do * doa, long int *count )
+{
+		gettimeofday(&(doa->m), &(doa->y));
+		*count =  (doa->m).tv_usec  - (doa->time_birth);
+		while(doa->counttime_eat < doa->time_eat){
+			gettimeofday(&(doa->m), &(doa->y));
+			*count =  (doa->m).tv_usec  - (doa->time_birth);
+			// printf("\n%ld\n",*count/1000);
+		}
+}
 to_do *ft_lst_last(to_do *dolist){
 	int i;
 
@@ -74,46 +89,81 @@ void	print(to_do dolist)
 	printf("\n_____________________________");
 	printf("\nnumb_philo:%d\n", dolist.numb_philo);
 	printf("philo_birth_time:%ld\n", dolist.time_birth);
-	printf("time_eat: %d\n", dolist.time_eat);
-	printf("time_sleep: %d\n", dolist.time_sleep);
-	printf("time_die: %d", dolist.time_die);
-	printf("\nmeal_plan: %d", dolist.meal_plan);
+	printf("time_eat: %ld\n", dolist.time_eat);
+	printf("time_sleep: %ld\n", dolist.time_sleep);
+	printf("time_die: %ld\n", dolist.time_die);
+	printf("meal_plan: %d", dolist.meal_plan);
 	printf("\n-----------------------------\n");
 }
 
 void	*timz()
 {
     printf("hi thread here");
+	return 0;
 }
+void eating(  to_do * doa, long int *count )
+{
+	gettimeofday(&(doa->m), &(doa->y));
+		*count =  (doa->m).tv_usec  - (doa->time_birth);
+		while(doa->counttime_eat/1000 < doa->time_eat){
+			gettimeofday(&(doa->m), &(doa->y));
+			// printf("eating :%ld\n",*count);
+			*count =   (doa->m).tv_usec/1000  ;
+		}
+}
+
 void* routine(void *test)
 {
-	t_neighbours wow;
+	to_do wow;
 
-	wow = * (t_neighbours*)test;
-	print(*(wow.future));
+	wow = * (to_do*)test;
+	// printf("\nstart-----------------\n");
+	// print(*(wow.future));
+	// print(*(wow.past));
+	// print(*(wow.present));
+	// printf("eating :%ld\n",wow.counttime_eat);
+
+	eating(&wow, &wow.counttime_eat);
+	// printf("eating :%ld\n",wow.counttime_eat);
+	// printf("\nend-----------------\n\n");3
+
+	// return ;
 }
+
 void threads( to_do *dolist, int i)
 {
 	int count;
 	count = -1;
+	// printf("%d",(dolist)->numb_philo);
 	while (++count<i)
 	{
-		(dolist+ count)->test.present = &*(dolist + count);
-		(dolist+ count)->test.future= &*(dolist +count + 1 );
-		if(count == 0)
-			(dolist+ count)->test.past = &*(dolist + i - 1);
+		(dolist+ count)->present = &*(dolist + count);
+		if(count + 1  == i)
+			(dolist+ count)->future = &*(dolist);
 		else
-			(dolist+ count)->test.past = &*(dolist + count - 1);
+			(dolist+ count)->future = &*(dolist +count + 1 );
+		if(count == 0)
+			(dolist+ count)->past = &*(dolist + i - 1);
+		else
+			(dolist+ count)->past = &*(dolist + count - 1);
 
-		pthread_create(&dolist->t,NULL,&routine,&((dolist+ count)->test));
+		if (pthread_mutex_init(&(dolist+count)->fork,NULL) != 0)
+				return  ;
+		printf("\nstarting of thread %d\n",(dolist+count)->numb_philo);
+		if (pthread_create(&(dolist+count)->t,NULL,&routine,((dolist+ count))) != 0)
+				return  ;
+	}
+	count = -1;
+	while (++count <i){
+		pthread_join((dolist+count)->t,NULL);
+		if (pthread_mutex_destroy(&(dolist+count)->fork) != 0)
+				return  ;
+		printf("\nend of thread %d",(dolist+count)->numb_philo);
+
 	}
 }
 
-void	timed(long int *time, struct timeval m, struct timezone y)
-{
-	gettimeofday(&m, &y);
-	*time = m.tv_usec / 1000;
-}
+
 
 int	main(int argv, char *argc[])
 {
@@ -127,12 +177,18 @@ int	main(int argv, char *argc[])
         dolist = malloc(sizeof( to_do)*(atoi(argc[1])));
 		i = -1;
 		gettimeofday (&m, &y);
-		while (++i < argv - 1)
+		while (++i < atoi(argc[1]) )
 		{
 			setdolist(&(dolist[i]), argc, i);
-			dolist[i].time_birth = m.tv_usec / 1000;
-			// print((dolist[i]));
+			dolist[i].time_birth = m.tv_usec/1000 ;
+			print((dolist[i]));
 		}
-		threads(dolist,atoi(argc[1]));
+	// 	while(1)
+	// 	{gettimeofday (&m, &y);
+	// 	printf("\n%lld :: \n",m.tv_usec/1000 );
+	// }
+	eating(&dolist, &dolist->counttime_eat);
+
+		// threads(dolist,atoi(argc[1]));
 	}
 }
