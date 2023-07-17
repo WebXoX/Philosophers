@@ -107,6 +107,7 @@ void	*timz()
 
 void statusprint(to_do *dolist)
 {
+	printf("\n\ni:%d\n",dolist->currentflag);
 
 	printf("\n%ld ms: ", dolist->m.tv_sec * 1000 + dolist->m.tv_usec / 1000 - dolist->time_birth);
 	if (dolist->currentflag == 1)
@@ -126,7 +127,7 @@ void statusprint(to_do *dolist)
 void activity(  to_do * doa, long int *count,long int *limit  )
 {
 	gettimeofday(&(doa->m), &(doa->y));
-	doa->currentflag = 1;
+	doa->currentflag = 2;
 	statusprint(doa);
 		*count = (doa->m).tv_sec * 1000 + (doa->m).tv_usec / 1000  - (doa->time_birth);
 		while( *count < *limit){
@@ -140,17 +141,18 @@ void* routine(void *test)
 	to_do wow;
 
 	wow = * (to_do*)test;
-	// printf("\nstart-----------------\n");
-	// print(*(wow.future));
-	// print(*(wow.past));
-	// print(*(wow.present));
-	// printf("eating :%ld\n",wow.counttime_eat);
-
-	activity(&wow, &wow.counttime_eat, &wow.time_eat);
-	// activity(&wow, &wow.counttime_eat, &wow.time_eat);
-	// activity(&wow, &wow.counttime_eat, &wow.time_eat);
-	// activity(&wow, &wow.counttime_sleep, &wow.time_sleep);
-	// activity(&wow, &wow.counttime_thinking, &wow.time_thinking);
+	printf("i:%d\n\n",wow.currentflag);
+	if(wow.currentflag == 1)
+		activity(&wow, &wow.counttime_eat, &wow.time_eat);
+	if(wow.currentflag == 2)
+		activity(&wow, &wow.counttime_sleep, &wow.time_sleep);
+	if(wow.currentflag == 3)
+		activity(&wow, &wow.counttime_thinking, &wow.time_thinking);
+	if(wow.currentflag== 4)
+	{
+		activity(&wow, &wow.counttime_die, &wow.time_die);
+		
+	}
 	// printf("eating :%ld\n",wow.counttime_eat);
 	// printf("\nend-----------------\n\n");3
 	return (void *)0;
@@ -179,13 +181,13 @@ void threads( to_do *dolist, t_fork *fork, int i)
 		// 		return  ;
 	}
 	count = -1;
-	while (++count < i)
-	{
-		pthread_join((dolist + count)->t,NULL);
-		// if (pthread_mutex_destroy(&(dolist+count)->fork) != 0)
-		// 		return  ;
-		printf("\nend of thread %d",(dolist+count)->numb_philo);
-	}
+	// while (++count < i)
+	// {
+	// 	pthread_join((dolist + count)->t,NULL);
+	// 	// if (pthread_mutex_destroy(&(dolist+count)->fork) != 0)
+	// 	// 		return  ;
+	// 	printf("\nend of thread %d",(dolist+count)->numb_philo);
+	// }
 }
 
 
@@ -208,13 +210,22 @@ int	main(int argv, char *argc[])
 		threads(dolist,forkes,atoi(argc[1]));
 		while (++i < atoi(argc[1]) )
 		{
+			dolist[i].currentflag = 2;
 			setdolist(&(dolist[i]), argc, i);
 			dolist[i].time_birth = m.tv_sec * 1000 + m.tv_usec/1000 ;
 			printf("\n%ld",dolist[i].time_birth);
 			print((dolist[i]));
 			if (pthread_create(&(dolist+i)->t,NULL,&routine,((dolist+ i))) != 0)
-				return  ;
+				return 0 ;
 		}
+		i=-1;
+		while (++i < atoi(argc[1]))
+	{
+		pthread_join((dolist + i)->t,NULL);
+		// if (pthread_mutex_destroy(&(dolist+count)->fork) != 0)
+		// 		return  ;
+		printf("\nend of thread %d",(dolist+i)->numb_philo);
+	}
 		free(forkes);
 		free(dolist);
 	}
