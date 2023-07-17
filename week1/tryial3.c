@@ -175,8 +175,8 @@ void threads( to_do *dolist, t_fork *fork, int i)
 		// if (pthread_mutex_init(&(dolist+count)->fork,NULL) != 0)
 		// 		return  ;
 		printf("\nstarting of thread %d\n",(dolist + count)->numb_philo);
-		if (pthread_create(&(dolist+count)->t,NULL,&routine,((dolist+ count))) != 0)
-				return  ;
+		// if (pthread_create(&(dolist+count)->t,NULL,&routine,((dolist+ count))) != 0)
+		// 		return  ;
 	}
 	count = -1;
 	while (++count < i)
@@ -205,13 +205,17 @@ int	main(int argv, char *argc[])
 		i = -1;
 		
 			gettimeofday(&(m), &(y));
+		threads(dolist,forkes,atoi(argc[1]));
 		while (++i < atoi(argc[1]) )
 		{
 			setdolist(&(dolist[i]), argc, i);
 			dolist[i].time_birth = m.tv_sec * 1000 + m.tv_usec/1000 ;
 			printf("\n%ld",dolist[i].time_birth);
 			print((dolist[i]));
+			if (pthread_create(&(dolist+i)->t,NULL,&routine,((dolist+ i))) != 0)
+				return  ;
 		}
-		threads(dolist,forkes,atoi(argc[1]));
+		free(forkes);
+		free(dolist);
 	}
 }
