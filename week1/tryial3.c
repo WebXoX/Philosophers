@@ -28,7 +28,6 @@ typedef struct to_do
 	int 			currentflag;
 	int				meal_plan;
     pthread_t		t;
-	pthread_mutex_t fork;
 	t_fork			*left;
 	t_fork			*right;
 	struct timeval 	m;
