@@ -4,6 +4,7 @@
 #include <strings.h>
 #include <pthread.h>
 #include <sys/time.h>
+#include <unistd.h>
 
 typedef struct t_fork
 {
@@ -27,6 +28,7 @@ typedef struct to_do
 	long int		counttime_die;
 	int 			currentflag;
 	int				meal_plan;
+	int				lifecycle;
     pthread_t		t;
 	t_fork			*left;
 	t_fork			*right;
@@ -127,8 +129,8 @@ void statusprint(to_do *dolist)
 void activity(  to_do * doa, long int *count,long int *limit  )
 {
 	gettimeofday(&(doa->m), &(doa->y));
+	// doa->currentflag = 1;
 	statusprint(doa);
-	doa->currentflag = 1;
 		*count = (doa->m).tv_sec * 1000 + (doa->m).tv_usec / 1000  - (doa->time_birth);
 		while( *count < *limit){
 			gettimeofday(&(doa->m), &(doa->y));
@@ -142,8 +144,28 @@ void* routine(void *test)
 
 	wow = * (to_do*)test;
 	// printf("i:%d\n\n",wow.currentflag);
+		// printf("left:: %d\n\n",wow.right->i);
 	if(wow.currentflag == 1)
-		activity(&wow, &wow.counttime_eat, &wow.time_eat);
+	{
+		if(wow.right->i == 1 && wow.left->i == 1)
+		{
+		pthread_mutex_lock(&wow.right->fork);
+		pthread_mutex_lock(&wow.left->fork);
+		
+			wow.right->i--;
+			wow.left->i--; 
+			pthread_mutex_unlock(&wow.right->fork);
+			// pthread_mutex_unlock(&wow.left->fork);
+			activity(&wow, &wow.counttime_eat, &wow.time_eat);
+			wow.right->i++;
+			wow.left->i++;
+		}
+		else
+		{
+			printf("hitherersadf as\n");
+			usleep(10);
+		}
+	}
 	if(wow.currentflag == 2)
 		activity(&wow, &wow.counttime_sleep, &wow.time_sleep);
 	if(wow.currentflag == 3)
@@ -191,15 +213,23 @@ void threads( to_do *dolist, t_fork *fork, int i)
 }
 
 
-int forkinit(t_fork *forkes, int len)
+int forkmanup(t_fork *forkes, int len, int flag)
 {
 	int i;
 
 	i = -1;
+	if ( flag == 1)
 	while (++i < len)
-		if(pthread_mutex_init(&((forkes[i].fork)),NULL) !=0)
+	{
+		forkes[i].i=1;
+		if(pthread_mutex_init(&((forkes[i].fork)),NULL) != 0)
 			return (1);
 
+	}
+	if ( flag == 2)
+		while (++i < len)
+			if(pthread_mutex_destroy(&((forkes[i].fork))) != 0)
+				return (1);
 	return (0);
 }
 
@@ -218,16 +248,16 @@ int	main(int argv, char *argc[])
 		i = -1;
 		
 			gettimeofday(&(m), &(y));
-		if(forkinit(forkes,atoi(argc[1])) == 1)
+		if(forkmanup(forkes,atoi(argc[1]),1) == 1)
 			return(0);
 		threads(dolist,forkes,atoi(argc[1]));
 		while (++i < atoi(argc[1]) )
 		{
-			dolist[i].currentflag = 1;
+			dolist[i].currentflag = 2;
 			setdolist(&(dolist[i]), argc, i);
 			dolist[i].time_birth = m.tv_sec * 1000 + m.tv_usec/1000 ;
-			printf("\n%ld",dolist[i].time_birth);
-			print((dolist[i]));
+			// printf("\n%ld",dolist[i].time_birth);
+			// print((dolist[i]));
 			if (pthread_create(&(dolist+i)->t,NULL,&routine,((dolist+ i))) != 0)
 				return 0 ;
 		}
@@ -239,6 +269,11 @@ int	main(int argv, char *argc[])
 		// 		return  ;
 		printf("\nend of thread %d",(dolist+i)->numb_philo);
 		}
+			if(forkmanup(forkes,atoi(argc[1]),2) == 1)
+			{
+				return(0);
+			// printf("hi");
+			}
 		free(forkes);
 		free(dolist);
 	}
