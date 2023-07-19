@@ -123,9 +123,9 @@ void statusprint(to_do *dolist)
 void activity(  to_do * doa, long int *count,long int *limit  )
 {
 	gettimeofday(&(doa->m), &(doa->y));
-	statusprint(doa);
 	
 		*count = (doa->m).tv_sec * 1000 + (doa->m).tv_usec / 1000  - (doa->time_birth);
+	statusprint(doa);
 		while( *count < *limit){
 			gettimeofday(&(doa->m), &(doa->y));
 			*count = (doa->m).tv_sec * 1000 + (doa->m).tv_usec/1000  - (doa->time_birth);
