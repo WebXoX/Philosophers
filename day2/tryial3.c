@@ -155,10 +155,14 @@ void* routine(void *test)
 			wow.right->i--;
 			wow.left->i--; 
 			pthread_mutex_unlock(&wow.right->fork);
-			// pthread_mutex_unlock(&wow.left->fork);
+			pthread_mutex_unlock(&wow.left->fork);
 			activity(&wow, &wow.counttime_eat, &wow.time_eat);
+			pthread_mutex_lock(&wow.right->fork);
+			pthread_mutex_lock(&wow.left->fork);
 			wow.right->i++;
 			wow.left->i++;
+			pthread_mutex_unlock(&wow.right->fork);
+			pthread_mutex_unlock(&wow.left->fork);
 		}
 		else
 		{
@@ -253,7 +257,7 @@ int	main(int argv, char *argc[])
 		threads(dolist,forkes,atoi(argc[1]));
 		while (++i < atoi(argc[1]) )
 		{
-			dolist[i].currentflag = 2;
+			dolist[i].currentflag = 1;
 			setdolist(&(dolist[i]), argc, i);
 			dolist[i].time_birth = m.tv_sec * 1000 + m.tv_usec/1000 ;
 			// printf("\n%ld",dolist[i].time_birth);
@@ -264,7 +268,7 @@ int	main(int argv, char *argc[])
 		i=-1;
 		while (++i < atoi(argc[1]))
 		{
-		pthread_join((dolist + i)->t,NULL);
+		// pthread_join((dolist + i)->t,NULL);
 		// if (pthread_mutex_destroy(&(dolist+count)->fork) != 0)
 		// 		return  ;
 		printf("\nend of thread %d",(dolist+i)->numb_philo);

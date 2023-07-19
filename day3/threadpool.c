@@ -36,48 +36,8 @@ typedef struct to_do
 	struct timeval 	m;
 	struct timezone y;
 }				to_do;
-void mutex_events(pthread_mutex_t *left,pthread_mutex_t *right, pthread_mutex_t *print, int flag)
-{
-	if (flag == 1)
-	{
-		pthread_mutex_lock(left);
-		pthread_mutex_lock(right);
-	}
-	if (flag == 2)
-	{
-		pthread_mutex_unlock(left);
-		pthread_mutex_unlock(right);
-	}
-	if (flag == 3)
-			pthread_mutex_lock(print);
-	if (flag == 4)
-			pthread_mutex_unlock(print);
 
-}
-void	timed( to_do * doa, long int *count )
-{
-		gettimeofday(&(doa->m), &(doa->y));
-		*count =  (doa->m).tv_usec  - (doa->time_birth);
-		while(doa->counttime_eat < doa->time_eat){
-			gettimeofday(&(doa->m), &(doa->y));
-			*count =  (doa->m).tv_usec  - (doa->time_birth);
-			// printf("\n%ld\n",*count/1000);
-		}
-}
 
-to_do *ft_lst_last(to_do *dolist){
-	int i;
-
-	i = 0;
-	while (dolist!=NULL)
-	{
-		dolist++;
-		printf("hi");
-	i++;
-	}	
-	i--;
-	return(&*(dolist));
-}
 
 int	checker(char *ptr[])
 {
@@ -122,16 +82,28 @@ void	print(to_do dolist)
 	pthread_mutex_lock(&dolist.print_mutex);
 
 }
-
-void	*timz()
+void mutex_events(pthread_mutex_t *left,pthread_mutex_t *right, pthread_mutex_t *print, int flag)
 {
-    printf("hi thread here");
-	return 0;
+	if (flag == 1)
+	{
+		pthread_mutex_lock(left);
+		pthread_mutex_lock(right);
+	}
+	if (flag == 2)
+	{
+		pthread_mutex_unlock(left);
+		pthread_mutex_unlock(right);
+	}
+	if (flag == 3)
+			pthread_mutex_lock(print);
+	if (flag == 4)
+			pthread_mutex_unlock(print);
+
 }
 
 void statusprint(to_do *dolist)
 {
-	mutex_events(&dolist->left->fork,&dolist->right->fork,&dolist->print_mutex,3);
+	// mutex_events(&dolist->left->fork,&dolist->right->fork,&dolist->print_mutex,3);
 	printf("\n%ld ms: ", dolist->m.tv_sec * 1000 + dolist->m.tv_usec / 1000 - dolist->time_birth);
 	if (dolist->currentflag == 1)
 	{
@@ -145,25 +117,23 @@ void statusprint(to_do *dolist)
 		printf("%d is thinking", dolist->numb_philo);
 	if (dolist->currentflag == 4)
 		printf("%d is died", dolist->numb_philo);
-	mutex_events(&dolist->left->fork,&dolist->right->fork,&dolist->print_mutex,3);
+	// mutex_events(&dolist->left->fork,&dolist->right->fork,&dolist->print_mutex,3);
 }
 
 void activity(  to_do * doa, long int *count,long int *limit  )
 {
 	gettimeofday(&(doa->m), &(doa->y));
 	statusprint(doa);
-	mutex_events(&doa->left->fork,&doa->right->fork,&doa->print_mutex,3);
+	
 		*count = (doa->m).tv_sec * 1000 + (doa->m).tv_usec / 1000  - (doa->time_birth);
 		while( *count < *limit){
 			gettimeofday(&(doa->m), &(doa->y));
 			*count = (doa->m).tv_sec * 1000 + (doa->m).tv_usec/1000  - (doa->time_birth);
 		}
-	mutex_events(&doa->left->fork,&doa->right->fork,&doa->print_mutex,4);
-		
-	// if(doa->currentflag < 3)
-	// 	doa->currentflag++;
-	// else
-	// 	doa->currentflag = 1;
+	if(doa->currentflag < 3)
+		doa->currentflag++;
+	else
+		doa->currentflag = 1;
 }
 
 void events( to_do *philos)
@@ -171,22 +141,21 @@ void events( to_do *philos)
 
 	if(philos->currentflag == 1)
 	{
-		mutex_events(&philos->left->fork,&philos->right->fork,&philos->print_mutex,1);
 		if(philos->right->i == 1 && philos->left->i == 1)
 		{
+			mutex_events(&philos->left->fork,&philos->right->fork,&philos->print_mutex,1);
 				philos->right->i--;
 				philos->left->i--; 
 			mutex_events(&philos->left->fork,&philos->right->fork,&philos->print_mutex,2);
 				activity(philos, &philos->counttime_eat, &philos->time_eat);
+				// statusprint(philos);
 			mutex_events(&philos->left->fork,&philos->right->fork,&philos->print_mutex,1);
 				philos->right->i++;
 				philos->left->i++;
 			mutex_events(&philos->left->fork,&philos->right->fork,&philos->print_mutex,2);
 		}
-		// else
-		// 	usleep(10);
-
-
+		else
+			usleep(100);
 	}
 	if(philos->currentflag == 2)
 		activity(philos, &philos->counttime_sleep, &philos->time_sleep);
@@ -195,7 +164,6 @@ void events( to_do *philos)
 	if(philos->currentflag== 4)
 	{
 		activity(philos, &philos->counttime_die, &philos->time_die);
-		
 	}
 
 }
@@ -205,21 +173,21 @@ void* routine(void *test)
 	to_do wow;
 
 	wow = * (to_do*)test;
-	// while (1)
-	// {
-	pthread_mutex_lock(&wow.print_mutex);
-	printf("\n philosphers %d  starting:: %d\n",wow.numb_philo, ((wow.right->i)));
-	pthread_mutex_unlock(&wow.print_mutex);
-	print(wow);
+	while (1)
+	{
+	// pthread_mutex_lock(&wow.print_mutex);
+	// printf("\n philosphers %d  starting:: %d\n",wow.numb_philo, ((wow.right->i)));
+	// // print(wow);
+	// pthread_mutex_unlock(&wow.print_mutex);
 
-		// events(&wow);
-	pthread_mutex_lock(&wow.print_mutex);
-	// print(wow);
-	printf("\n philosphers %d ending:: %d\n",wow.numb_philo, ((wow.right->i)));
-	pthread_mutex_unlock(&wow.print_mutex);
+		events(&wow);
+	// pthread_mutex_lock(&wow.print_mutex);
+	// // print(wow);
+	// printf("\n philosphers %d ending:: %d\n",wow.numb_philo, ((wow.right->i)));
+	// pthread_mutex_unlock(&wow.print_mutex);
 
-		// break;
-	// }
+		break;
+	}
 	return (void *)0;
 }
 
@@ -266,45 +234,97 @@ int forkmanup(t_fork *forkes, int len, int flag)
 				return (1);
 	return (0);
 }
+void philo_utils_inint(to_do dolist[], t_fork *forkes, char* argc[],int length)
+{
+	int i;
 
-int	main(int argv, char *argc[])
+	i = -1;
+
+	if(forkmanup(forkes,length,1) == 1)
+			return;
+	threads(dolist,forkes,length);
+	while (++i < length)
+	{
+			dolist[i].currentflag = 1;
+			setdolist(&(dolist[i]), argc, i);
+	}
+}
+
+int main (int argv, char *argc[])
 {
 	to_do			*dolist;
 	t_fork			*forkes;
-	pthread_mutex_t print;
-	int				i;
+	pthread_mutex_t printer_lock;
 	struct timeval	m;
 	struct timezone	y;
+	int i;
 
-	pthread_mutex_init(&print,NULL);
 	if ((argv == 5 || argv == 6) && checker(argc) == 1)
 	{
-        dolist = malloc(sizeof( to_do)*(atoi(argc[1])));
-        forkes = malloc(sizeof( t_fork)*(atoi(argc[1])));
+        dolist = malloc(sizeof(to_do)*(atoi(argc[1])));
+        forkes = malloc(sizeof(t_fork)*(atoi(argc[1])));
 		i = -1;
-		
+		if(pthread_mutex_init(&(printer_lock),NULL) != 0)
+			return (1);
 		gettimeofday(&(m), &(y));
-		if(forkmanup(forkes,atoi(argc[1]),1) == 1)
-			return(0);
-		
-		threads(dolist,forkes,atoi(argc[1]));
+		philo_utils_inint( dolist,  forkes,argc, atoi(argc[1]));
 		while (++i < atoi(argc[1]) )
 		{
-			dolist[i].currentflag = 1;
-			setdolist(&(dolist[i]), argc, i);
 			dolist[i].time_birth = m.tv_sec * 1000 + m.tv_usec/1000 ;
+			dolist[i].print_mutex = printer_lock;
 			if (pthread_create(&(dolist+i)->t,NULL,&routine,((dolist+ i))) != 0)
 				return 0 ;
 		}
 		i = -1;
 		while (++i < atoi(argc[1]))
-		{
 			if (pthread_join((dolist + i)->t,NULL) != 0)
 				return 0 ;
-		}
-			if(forkmanup(forkes,atoi(argc[1]),2) == 1)
-				return(0);
+		if (forkmanup(forkes,atoi(argc[1]),2) == 1)
+			return(0);
 		free(forkes);
 		free(dolist);
 	}
 }
+
+
+// int	main(int argv, char *argc[])
+// {
+// 	to_do			*dolist;
+// 	t_fork			*forkes;
+// 	pthread_mutex_t print;
+// 	int				i;
+// 	struct timeval	m;
+// 	struct timezone	y;
+
+// 	pthread_mutex_init(&print,NULL);
+// 	if ((argv == 5 || argv == 6) && checker(argc) == 1)
+// 	{
+//         dolist = malloc(sizeof( to_do)*(atoi(argc[1])));
+//         forkes = malloc(sizeof( t_fork)*(atoi(argc[1])));
+// 		i = -1;
+		
+// 		gettimeofday(&(m), &(y));
+// 		if(forkmanup(forkes,atoi(argc[1]),1) == 1)
+// 			return(0);
+		
+// 		threads(dolist,forkes,atoi(argc[1]));
+// 		while (++i < atoi(argc[1]) )
+// 		{
+// 			dolist[i].currentflag = 1;
+// 			setdolist(&(dolist[i]), argc, i);
+// 			dolist[i].time_birth = m.tv_sec * 1000 + m.tv_usec/1000 ;
+// 			if (pthread_create(&(dolist+i)->t,NULL,&routine,((dolist+ i))) != 0)
+// 				return 0 ;
+// 		}
+// 		i = -1;
+// 		while (++i < atoi(argc[1]))
+// 		{
+// 			if (pthread_join((dolist + i)->t,NULL) != 0)
+// 				return 0 ;
+// 		}
+// 			if(forkmanup(forkes,atoi(argc[1]),2) == 1)
+// 				return(0);
+// 		free(forkes);
+// 		free(dolist);
+// 	}
+// }
