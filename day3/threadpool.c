@@ -17,6 +17,7 @@ typedef struct to_do
 
 	int				numb_philo;
 	long int		time_birth;
+	long int		time_round;
 	long int		time_current;
 	long int		time_eat;
 	long int		time_sleep;
@@ -27,6 +28,7 @@ typedef struct to_do
 	long int		counttime_thinking;
 	long int		counttime_die;
 	int 			currentflag;
+	int 			*death_event;
 	int				meal_plan;
 	// int				lifecycle;
     pthread_t		t;
@@ -104,19 +106,19 @@ void mutex_events(pthread_mutex_t *left,pthread_mutex_t *right, pthread_mutex_t 
 void statusprint(to_do *dolist)
 {
 	// mutex_events(&dolist->left->fork,&dolist->right->fork,&dolist->print_mutex,3);
-	printf("\n%ld ms: ", dolist->m.tv_sec * 1000 + dolist->m.tv_usec / 1000 - dolist->time_birth);
+	printf("%ld ms: ", dolist->m.tv_sec * 1000 + dolist->m.tv_usec / 1000 - dolist->time_birth);
 	if (dolist->currentflag == 1)
 	{
 		printf("%d has taken a fork\n", dolist->numb_philo);
 		printf("%ld ms: %d has taken a fork\n",(dolist->m.tv_sec * 1000 + dolist->m.tv_usec / 1000 - dolist->time_birth), dolist->numb_philo);
-		printf("%ld ms: %d is eating",dolist->m.tv_sec * 1000 + dolist->m.tv_usec / 1000 - dolist->time_birth,  dolist->numb_philo);
+		printf("%ld ms: %d is eating\n",dolist->m.tv_sec * 1000 + dolist->m.tv_usec / 1000 - dolist->time_birth,  dolist->numb_philo);
 	}
 	if (dolist->currentflag == 2)
-		printf("%d is sleeping", dolist->numb_philo);
+		printf("%d is sleeping\n", dolist->numb_philo);
 	if (dolist->currentflag == 3)
-		printf("%d is thinking", dolist->numb_philo);
+		printf("%d is thinking\n", dolist->numb_philo);
 	if (dolist->currentflag == 4)
-		printf("%d is died", dolist->numb_philo);
+		printf("%d is died\n", dolist->numb_philo);
 	// mutex_events(&dolist->left->fork,&dolist->right->fork,&dolist->print_mutex,3);
 }
 
@@ -126,9 +128,15 @@ void activity(  to_do * doa, long int *count,long int *limit  )
 	
 		*count = (doa->m).tv_sec * 1000 + (doa->m).tv_usec / 1000  - (doa->time_birth);
 	statusprint(doa);
-		while( *count < *limit){
+		while( *count < *limit)
+		{
 			gettimeofday(&(doa->m), &(doa->y));
 			*count = (doa->m).tv_sec * 1000 + (doa->m).tv_usec/1000  - (doa->time_birth);
+			doa->counttime_die = (doa->m).tv_sec * 1000 + (doa->m).tv_usec/1000  - (doa->time_round);
+		}
+	if (doa->counttime_die == doa->time_die)
+		{*(doa->death_event) = 1;
+		printf("hifp");
 		}
 	if(doa->currentflag < 3)
 		doa->currentflag++;
@@ -179,6 +187,8 @@ void* routine(void *test)
 	// printf("\n philosphers %d  starting:: %d\n",wow.numb_philo, ((wow.right->i)));
 	// // print(wow);
 	// pthread_mutex_unlock(&wow.print_mutex);
+	if((*wow.death_event==1))
+		break;
 
 		events(&wow);
 	// pthread_mutex_lock(&wow.print_mutex);
@@ -186,7 +196,7 @@ void* routine(void *test)
 	// printf("\n philosphers %d ending:: %d\n",wow.numb_philo, ((wow.right->i)));
 	// pthread_mutex_unlock(&wow.print_mutex);
 
-		break;
+		// break;
 	}
 	return (void *)0;
 }
@@ -258,7 +268,9 @@ int main (int argv, char *argc[])
 	struct timeval	m;
 	struct timezone	y;
 	int i;
+	int death;
 
+	death = 0;
 	if ((argv == 5 || argv == 6) && checker(argc) == 1)
 	{
         dolist = malloc(sizeof(to_do)*(atoi(argc[1])));
@@ -271,7 +283,9 @@ int main (int argv, char *argc[])
 		while (++i < atoi(argc[1]) )
 		{
 			dolist[i].time_birth = m.tv_sec * 1000 + m.tv_usec/1000 ;
+			dolist[i].time_round = m.tv_sec * 1000 + m.tv_usec/1000 ;
 			dolist[i].print_mutex = printer_lock;
+			dolist[i].death_event = &death;
 			if (pthread_create(&(dolist+i)->t,NULL,&routine,((dolist+ i))) != 0)
 				return 0 ;
 		}
