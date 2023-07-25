@@ -10,6 +10,7 @@ typedef struct t_fork
 {
 	pthread_mutex_t fork;
 	int				i;
+	int 		forkid;
 }				t_fork;
 
 typedef struct to_do
@@ -18,6 +19,7 @@ typedef struct to_do
 	int				numb_philo;
 	long int		time_birth;
 	long int		time_round;
+	long int		time_round_death;
 	long int		time_current;
 	long int		time_eat;
 	long int		time_sleep;
@@ -30,7 +32,7 @@ typedef struct to_do
 	int 			currentflag;
 	int 			*death_event;
 	int				meal_plan;
-	// int				lifecycle;
+	int				*meal_eaten;
     pthread_t		t;
 	t_fork			*left;
 	t_fork			*right;
@@ -40,22 +42,43 @@ typedef struct to_do
 	struct timezone y;
 }				to_do;
 
-void mutex_events(pthread_mutex_t *left,pthread_mutex_t *right, pthread_mutex_t *print, int flag)
+void	print(to_do dolist)
+{
+	printf("\n_____________________________");
+	printf("\nnumb_philo:%d\n", dolist.numb_philo);
+	printf("philo_birth_time:%ld\n", dolist.time_birth);
+	printf("time_eat: %ld\n", dolist.time_eat);
+	printf("time_sleep: %ld\n", dolist.time_sleep);
+	printf("time_die: %ld", dolist.time_die);
+	printf("\nmeal_plan: %d", *(dolist.meal_eaten));
+	printf("\n-----------------------------\n");
+}
+
+void mutex_events(to_do *philos, int flag)
 {
 	if (flag == 1)
 	{
-		pthread_mutex_lock(left);
-		pthread_mutex_lock(right);
+		pthread_mutex_lock(&philos->left->fork);
+		pthread_mutex_lock(&philos->right->fork);
+		philos->left->i = 0;
+		philos->right->i = 0;
+		*(philos->meal_eaten)+=1;
+		pthread_mutex_unlock(&philos->left->fork);
+		pthread_mutex_unlock(&philos->right->fork);
 	}
 	if (flag == 2)
 	{
-		pthread_mutex_unlock(left);
-		pthread_mutex_unlock(right);
+		pthread_mutex_lock(&philos->left->fork);
+		pthread_mutex_lock(&philos->right->fork);
+		philos->left->i = 1;
+		philos->right->i = 1;
+		pthread_mutex_unlock(&philos->left->fork);
+		pthread_mutex_unlock(&philos->right->fork);
 	}
-	if (flag == 3)
-			pthread_mutex_lock(print);
-	if (flag == 4)
-			pthread_mutex_unlock(print);
+	// if (flag == 3)
+	// 		pthread_mutex_lock(print);
+	// if (flag == 4)
+	// 		pthread_mutex_unlock(print);
 
 }
 void threads( to_do *dolist, t_fork *fork, int i)
@@ -65,10 +88,7 @@ void threads( to_do *dolist, t_fork *fork, int i)
 	count = -1;
 	while (++count<i)
 	{
-		if(count + 1  == i)
-			(dolist + count)->right = (fork);
-		else
-			(dolist+ count)->right = (fork +count  );
+		(dolist+ count)->right = (fork +count  );
 		if(count == 0)
 			(dolist+ count)->left = (fork + i - 1);
 		else
@@ -85,6 +105,7 @@ int forkmanup(t_fork *forkes, int len, int flag)
 	while (++i < len)
 	{
 		forkes[i].i=1;
+		forkes[i].forkid=i+1;
 		if(pthread_mutex_init(&((forkes[i].fork)),NULL) != 0)
 			return (1);
 	}
@@ -97,7 +118,17 @@ int forkmanup(t_fork *forkes, int len, int flag)
 				return (1);
 	return (0);
 }
+int deathchecker (to_do *philo)
+{
+	int i;
 
+	i = 1;
+	pthread_mutex_lock(philo->death_lock);
+	if(*philo->death_event == 1 &&  ((philo->meal_plan > 0 && *philo->meal_eaten == philo->meal_plan )|| philo->meal_plan == 0))
+		i = 0;
+	pthread_mutex_unlock(philo->death_lock);
+	return (i);
+}
 int	checker(char *ptr[])
 {
 	int	i;
@@ -120,13 +151,12 @@ void	setdolist(to_do *dolist, char *argc[], int i)
 	dolist->time_eat = atoi(argc[3]);
 	dolist->time_sleep = atoi(argc[4]);
 	dolist->time_die = atoi(argc[2]);
-	dolist->time_thinking = dolist->time_die -dolist->time_eat + dolist->time_sleep;
+	// dolist->time_thinking = dolist->time_die -(dolist->time_eat + dolist->time_sleep);
 
-	if(dolist->time_thinking < 0)
-		dolist->time_thinking = 0;
-
+	// if(dolist->time_thinking < 0)
+	dolist->time_thinking = 0;
 	if (argc[5])
-		dolist->meal_plan = atoi(argc[5]);
+		dolist->meal_plan = atoi(argc[5])* atoi(argc[1]);
 	else
 		dolist->meal_plan = 0;
 }
@@ -170,118 +200,134 @@ void statusprint(to_do *dolist)
 void activity(  to_do * doa, long int *count,long int *limit  )
 {
 	gettimeofday(&(doa->m), &(doa->y));
-	
-		*count = (doa->m).tv_sec * 1000 + (doa->m).tv_usec / 1000  - (doa->time_birth);
+		doa->time_round = (doa->m).tv_sec * 1000 + (doa->m).tv_usec / 1000;
+		*count = (doa->m).tv_sec * 1000 + (doa->m).tv_usec / 1000  - (doa->time_round);
+	 	if (deathchecker(doa)==0)
+				return ;
 		statusprint(doa);
 		while( *count < *limit)
 		{
 			gettimeofday(&(doa->m), &(doa->y));
-			*count = (doa->m).tv_sec * 1000 + (doa->m).tv_usec/1000  - (doa->time_birth);
-			doa->counttime_die = (doa->m).tv_sec * 1000 + (doa->m).tv_usec/1000  - (doa->time_round);
-		
+			*count = (doa->m).tv_sec * 1000 + (doa->m).tv_usec/1000  - (doa->time_round);
+			doa->counttime_die = (doa->m).tv_sec * 1000 + (doa->m).tv_usec/1000  - (doa->time_round_death);
+			if (deathchecker(doa) == 0)
+				return ;
+			usleep(1);
 			pthread_mutex_lock(doa->death_lock);
-			if (doa->counttime_die >= doa->time_die && 	*(doa->death_event) ==0)
+			if ( deathchecker(doa) == 1 && *(doa->death_event) == 0 && doa->counttime_die == doa->time_die )
 			{
-			pthread_mutex_unlock(doa->death_lock);
-
-				*(doa->death_event) = 1;
-				doa->currentflag = 4;
-			pthread_mutex_lock(doa->print_mutex);
-				printf("%ld ms: %d is died\n", doa->m.tv_sec * 1000 + doa->m.tv_usec / 1000 - doa->time_birth, doa->numb_philo);
-			pthread_mutex_unlock(doa->print_mutex);
+					*(doa->death_event) = 1;
+				pthread_mutex_unlock(doa->death_lock);
+					doa->currentflag = 4;
+				pthread_mutex_lock(doa->print_mutex);
+					printf("%ld ms: %d is died\n", doa->m.tv_sec * 1000 + doa->m.tv_usec / 1000 - doa->time_birth, doa->numb_philo);
+				pthread_mutex_unlock(doa->print_mutex);
 				break;
 			}
-			else if (	*(doa->death_event) == 1)
-				break;
+
 		}
-	
+	// if (*(doa->death_event) == 0)
+	// 			return ;
 	if(doa->currentflag < 3)
 		doa->currentflag++;
-	else if( doa->currentflag != 4)
+	else if( doa->currentflag == 3)
 		doa->currentflag = 1;
 	
 	// usleep(5);
 }
 
-int deathchecker (to_do *philo)
-{
-	int i;
 
-	i = 1;
-	pthread_mutex_lock(philo->death_lock);
-	if(*philo->death_event == 1)
-		i = 0;
-	pthread_mutex_unlock(philo->death_lock);
-	return (i);
-}
 int eating(to_do *philos)
 {
+	if((philos->meal_plan) != 0 && *philos->meal_eaten == philos->meal_plan)
+		{
+			philos->currentflag = 4;
+			return 0;
+		}
 	if(philos->right->i == 1 && philos->left->i == 1)
 		{
 			gettimeofday(&(philos->m), &(philos->y));
 			philos->counttime_die = 0;
-			philos->counttime_die = (philos->m).tv_sec * 1000 + (philos->m).tv_usec/1000  - (philos->time_round);
+			philos->time_round_death = (philos->m).tv_sec * 1000 + (philos->m).tv_usec/1000;
 
-			mutex_events(&philos->left->fork,&philos->right->fork,philos->print_mutex,1);
-				philos->right->i--;
-				philos->left->i--; 
-			mutex_events(&philos->left->fork,&philos->right->fork,philos->print_mutex,2);
+			if (deathchecker(philos) == 0)
+				return 0;
+			mutex_events(philos,1);
 				activity(philos, &philos->counttime_eat, &philos->time_eat);
-			mutex_events(&philos->left->fork,&philos->right->fork,philos->print_mutex,1);
-				philos->right->i++;
-				philos->left->i++;
-			mutex_events(&philos->left->fork,&philos->right->fork,philos->print_mutex,2);
+			mutex_events(philos,2);
 			return (1);
 		}
 		return(0);
 }
+
+void evenlife (to_do *philos)
+{
+	if(philos->numb_philo % 2 == 0)
+	{
+			// printf("\nhi");
+		if (deathchecker(philos) == 0)
+			return;
+		if ( philos->currentflag == 1 && deathchecker(philos) == 1)
+			eating(philos);
+		else if ( philos->currentflag == 2&& deathchecker(philos) == 1)
+			activity(philos, &philos->counttime_sleep, &philos->time_sleep);
+		else if ( philos->currentflag == 3&& deathchecker(philos) == 1)
+		{
+			activity(philos, &philos->counttime_thinking, &philos->time_thinking);
+					// philos->currentflag = 1;
+		}	
+		else if ( philos->currentflag == 4&& deathchecker(philos) == 1)
+			return ;
+	}
+	else
+	{
+		int i;	
+		if (philos->time_die-philos->time_eat > 0)
+		 i = philos->time_die-philos->time_eat;
+		if (philos->time_die == philos->time_eat)
+			i = 0;
+		usleep(i);
+	} 
+}
+void oddlife (to_do *philos)
+{
+	if(philos->numb_philo % 2 > 0)
+	{
+		if (deathchecker(philos) == 0)
+			return;
+		if ( philos->currentflag == 1 && deathchecker(philos) == 1)
+		{
+			eating(philos);
+		}
+		else if ( philos->currentflag == 2&& deathchecker(philos) == 1)
+			activity(philos, &philos->counttime_sleep, &philos->time_sleep);
+		else if ( philos->currentflag == 3&& deathchecker(philos) == 1)
+		{
+			activity(philos, &philos->counttime_thinking, &philos->time_thinking);
+					// philos->currentflag = 1;
+		}	
+		else if ( philos->currentflag == 4&& deathchecker(philos) == 1)
+			return ;
+	}
+	// else
+	// {
+	// 	int i;
+	// 	if (philos->time_die-philos->time_eat > 0)
+	// 	 i = philos->time_die-philos->time_eat;
+	// 	if (philos->time_die == philos->time_eat)
+	// 		i = 0;
+	// 	usleep(i);
+	// } 
+}		
+
 void life( to_do *philos)
 {
-	pthread_mutex_lock(philos->death_lock);
-	if (*philos->death_event == 1)
-{
-pthread_mutex_lock(philos->death_lock);
-	return;
-}	
-
-	if ( philos->currentflag == 1 && *philos->death_event == 0)
+	if (deathchecker(philos) == 0)
 	{
-		// pthread_mutex_unlock(philos->death_lock);
-			// printf("hi from eating\n");
-		printf("philo num: %d eating\n",philos->numb_philo); 
-
-		philos->currentflag++;
+		return;
 	}
-	else if ( philos->currentflag == 2&& *philos->death_event == 0)
-
-{
-			// pthread_mutex_unlock(philos->death_lock);
-
-			printf("hi from sleeping\n");
-philos->currentflag++; 
-}
-	else if ( philos->currentflag == 3&& *philos->death_event == 0)
-	{
-			// pthread_mutex_lock(philos->death_lock);
-			printf("hi from thinking\n");
-	philos->currentflag++;
-	}
-	else if ( philos->currentflag == 4&& *philos->death_event == 0)
-
-			{
-			// pthread_mutex_unlock(philos->death_lock);
-
-			printf("hi from dying \n");
-			philos->currentflag++;
-			pthread_mutex_lock(philos->death_lock);
-			if (*philos->death_event == 0)
-			{
-				*philos->death_event =1;
-				printf("philo num: %d dead\n",philos->numb_philo); 
-			pthread_mutex_unlock(philos->death_lock);
-			}
-			}
-
+	evenlife(philos);
+	oddlife(philos);
 }
 
 void *routine( void *philo_invoid)
@@ -289,14 +335,15 @@ void *routine( void *philo_invoid)
 	to_do philo_rising;
 	
 	philo_rising = * (to_do *) philo_invoid;
-	while (deathchecker(&philo_rising))
+	while (*(philo_rising.death_event)!=2)
 	{
 		
-		// if(*(philo_rising.death_event)==1)
-		// 	break;
-
+		if(*(philo_rising.death_event)==1)
+			break;
+	if((philo_rising.meal_plan) != 0 && *philo_rising.meal_eaten ==philo_rising.meal_plan)
+			break;
 		life(&philo_rising);
-		// break;
+		// usleep(1);
 	
 	}
 	return (void *)0;
@@ -310,8 +357,10 @@ void starter(to_do *dolist , t_fork *forkes, char *argc[])
 	struct timezone	y;
 	int i;
 	int death;
+	int meal;
 
 	death = 0;
+	meal = 0;
 	i = -1;
 	if(pthread_mutex_init(&(printer_lock),NULL) != 0 && pthread_mutex_init(&(death_lock),NULL) != 0)
 		return ;
@@ -321,9 +370,11 @@ void starter(to_do *dolist , t_fork *forkes, char *argc[])
 		{
 			dolist[i].time_birth = m.tv_sec * 1000 + m.tv_usec/1000 ;
 			dolist[i].time_round = m.tv_sec * 1000 + m.tv_usec/1000 ;
+			dolist[i].time_round_death = m.tv_sec * 1000 + m.tv_usec/1000 ;
 			dolist[i].print_mutex = &printer_lock;
 			dolist[i].death_lock = &death_lock;
 			dolist[i].death_event = &death;
+			dolist[i].meal_eaten = &meal;
 			if (pthread_create(&(dolist+i)->t,NULL,&routine,((dolist+ i))) != 0)
 				return ;
 		}
@@ -340,16 +391,12 @@ int main (int argv, char *argc[])
 {
 	to_do			*dolist;
 	t_fork			*forkes;
-	pthread_mutex_t printer_lock;
-	pthread_mutex_t death_lock;
-
-	int i;
-
 	if ((argv == 5 || argv == 6) && checker(argc) == 1)
 	{
         dolist = malloc(sizeof(to_do)*(atoi(argc[1])));
         forkes = malloc(sizeof(t_fork)*(atoi(argc[1])));
 		starter(dolist , forkes,argc);
+		// print(*dolist);
 		free(forkes);
 		free(dolist);
 	}

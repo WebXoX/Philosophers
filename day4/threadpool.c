@@ -138,7 +138,7 @@ void activity(  to_do * doa, long int *count,long int *limit  )
 {
 	gettimeofday(&(doa->m), &(doa->y));
 	
-		*count = (doa->m).tv_sec * 1000 + (doa->m).tv_usec / 1000  - (doa->time_birth);
+		*count = (doa->m).tv_sec * 1000 + (doa->m).tv_usec / 1000  - (doa->time_round);
 		statusprint(doa);
 		while( *count < *limit)
 		{
@@ -198,7 +198,7 @@ void events( to_do *philos)
 		}
 		else
 		{
-			printf("philo %d: flag: %d\n",philos->numb_philo,philos->currentflag);
+			// printf("philo %d: flag: %d\n",philos->numb_philo,philos->currentflag);
 			usleep(philos->counttime_eat);
 		
 		}
@@ -239,7 +239,7 @@ void* routine(void *test)
 		break;
 
 		events(&wow);
-		break;
+		// break;
 	
 	// pthread_mutex_lock(&wow.print_mutex);
 	// // print(wow);
@@ -259,9 +259,6 @@ void threads( to_do *dolist, t_fork *fork, int i)
 	while (++count<i)
 	{
 		// pthread_mutex_init(&(dolist + count)->print_mutex,NULL);
-		if(count + 1  == i)
-			(dolist + count)->right = (fork);
-		else
 			(dolist+ count)->right = (fork +count  );
 		if(count == 0)
 			(dolist+ count)->left = (fork + i - 1);
