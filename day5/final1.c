@@ -81,6 +81,7 @@ void mutex_events(to_do *philos, int flag)
 	// 		pthread_mutex_unlock(print);
 
 }
+
 void threads( to_do *dolist, t_fork *fork, int i)
 {
 	int count;

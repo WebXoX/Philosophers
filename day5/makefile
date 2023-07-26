@@ -13,7 +13,7 @@
 
 NAME = philosphers
 
-SRC = 	  final1.c
+SRC = 	inint.c  main.c    mutex_events.c  threadjob.c todo.c
 OBJ	= $(SRC:.c=.o)
 
 CFLAGS = -Wall -Wextra -Werror -pthread
