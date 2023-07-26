@@ -6,7 +6,7 @@
 #    By: jperinch <jperinch@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/07/12 12:01:22 by jperinch          #+#    #+#              #
-#    Updated: 2023/07/25 14:27:19 by jperinch         ###   ########.fr        #
+#    Updated: 2023/07/26 09:35:35 by jperinch         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ NAME = philosphers
 SRC = 	inint.c  main.c    mutex_events.c  threadjob.c todo.c
 OBJ	= $(SRC:.c=.o)
 
-CFLAGS = -Wall -Wextra -Werror -pthread
+CFLAGS = -Wall -Wextra -Werror -pthread  -fsanitize=thread
 CC = gcc
 
 

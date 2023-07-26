@@ -25,8 +25,10 @@ void statusprint(to_do *dolist)
 
 int eating(to_do *philos)
 {
+	pthread_mutex_lock(philos->eat_lock);
 	if((philos->meal_plan) != 0 && *philos->meal_eaten == philos->meal_plan)
 		{
+			pthread_mutex_lock(philos->eat_lock);
 			philos->currentflag = 4;
 			return 0;
 		}
@@ -50,6 +52,7 @@ int eating(to_do *philos)
 void activity(  to_do * doa, long int *count,long int *limit  )
 {
 	gettimeofday(&(doa->m), &(doa->y));
+		pthread_mutex_lock(doa->death_lock);
 		doa->time_round = (doa->m).tv_sec * 1000 + (doa->m).tv_usec / 1000;
 		*count = (doa->m).tv_sec * 1000 + (doa->m).tv_usec / 1000  - (doa->time_round);
 	 	// if (deathchecker(doa)==0)
@@ -63,17 +66,16 @@ void activity(  to_do * doa, long int *count,long int *limit  )
 			// if (deathchecker(doa) == 0)
 			// 	return ;
 			usleep(1);
-			pthread_mutex_lock(doa->death_lock);
 			if ( deathchecker(doa) == 1 && *(doa->death_event) == 0 && doa->counttime_die == doa->time_die )
 			{
 					*(doa->death_event) = 1;
-				pthread_mutex_unlock(doa->death_lock);
 					doa->currentflag = 4;
 				pthread_mutex_lock(doa->print_mutex);
 					printf("%ld ms: %d is died\n", doa->m.tv_sec * 1000 + doa->m.tv_usec / 1000 - doa->time_birth, doa->numb_philo);
 				pthread_mutex_unlock(doa->print_mutex);
 				break;
 			}
+				pthread_mutex_unlock(doa->death_lock);
 
 		}
 	// if (*(doa->death_event) == 0)

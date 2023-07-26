@@ -24,7 +24,7 @@ int forkmanup(t_fork *forkes, int len, int flag)
 	if ( flag == 1)
 	while (++i < len)
 	{
-		// forkes[i].i = 1;
+		forkes[i].i = 1;
 		forkes[i].forkid = i + 1;
 		if(pthread_mutex_init(&((forkes[i].fork)),NULL) != 0)
 			return (1);
@@ -51,24 +51,30 @@ void	setdolist(to_do *dolist, char *argc[], int i)
 		dolist->meal_plan = 0;
 }
 
-int philo_utils_inint(to_do dolist[], t_fork *forkes, char* argc[],int length)
+void philo_utils_inint(to_do dolist[], t_fork *forkes, char* argc[],int length)
 {
 	int i;
 	pthread_mutex_t printer_lock;
 	pthread_mutex_t death_lock;
+	pthread_mutex_t eat_lock;
+    int             death;
 
+    death = 0;	
 	i = -1;
-
-    if(pthread_mutex_init(&(printer_lock),NULL) != 0 && pthread_mutex_init(&(death_lock),NULL) != 0)
-            return 1;
+    if(pthread_mutex_init(&(printer_lock),NULL) != 0 
+		&& pthread_mutex_init(&(death_lock),NULL) != 0 
+			&& pthread_mutex_init(&(eat_lock),NULL) != 0)
+            return ;
 	inint_fork_placement(dolist,forkes,length);
 	while (++i < length)
 	{
-		
 			dolist[i].currentflag = 1;
             dolist[i].print_mutex = &printer_lock;
 		    dolist[i].death_lock = &death_lock;
+		    dolist[i].eat_lock = &eat_lock;
 			setdolist(&(dolist[i]), argc, i);
 	}
-	return (0);
+	starter(dolist ,argc , death);
+	if(pthread_mutex_destroy(&(printer_lock))!= 0 && pthread_mutex_destroy(&(death_lock)) != 0)
+            return ;
 }
