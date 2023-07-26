@@ -18,8 +18,9 @@ int deathchecker (to_do *philo)
 
 void evenlife (to_do *philos)
 {
-    // if (deathchecker(philos) == 0)
-	// 		return;
+    if (deathchecker(philos) == 0)
+			return;
+
 	if(philos->numb_philo % 2 == 0)
 	{
 		if ( philos->currentflag == 1 )
@@ -36,9 +37,16 @@ void evenlife (to_do *philos)
 	}
 	else
 	{
-		int i;	
-		if (philos->time_die-philos->time_eat > 0)
-		 i = philos->time_die-philos->time_eat;
+		int i;
+
+		i = 0;
+		if (philos->time_die > philos->time_eat )
+		 	i = philos->time_eat;
+		// printf("%d philo entered i: %d\n", philos->numb_philo,i);
+
+		if (philos->time_die - (philos->time_eat + philos->time_sleep) > 0)
+			i = philos->time_die - (philos->time_eat + philos->time_sleep);
+
 		if (philos->time_die == philos->time_eat)
 			i = 0;
 		usleep(i);
@@ -49,7 +57,9 @@ void oddlife (to_do *philos)
 {
 		// if (deathchecker(philos) == 0)
 		// 	return;
-	if(philos->numb_philo % 2 > 0)
+		// printf("%d philo entered \n", philos->numb_philo);
+
+	if(philos->numb_philo % 2 != 0)
 	{
 		if ( philos->currentflag == 1 )
 		{

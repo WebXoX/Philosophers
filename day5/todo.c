@@ -36,12 +36,12 @@ int eating(to_do *philos)
 			return 0;
 		}
 		pthread_mutex_unlock(philos->eat_lock);
-		pthread_mutex_lock(&philos->right->fork);
-		pthread_mutex_lock(&philos->left->fork);
-	if(philos->right->i == 1 && philos->left->i == 1)
-		{
-			pthread_mutex_unlock(&philos->right->fork);
-			pthread_mutex_unlock(&philos->left->fork);
+	// 	pthread_mutex_lock(&philos->right->fork);
+	// 	pthread_mutex_lock(&philos->left->fork);
+	// if(philos->right->i == 1 && philos->left->i == 1)
+	// 	{
+	// 		pthread_mutex_unlock(&philos->right->fork);
+	// 		pthread_mutex_unlock(&philos->left->fork);
 			gettimeofday(&(philos->m), &(philos->y));
 			philos->counttime_die = 0;
 			philos->time_round_death = (philos->m).tv_sec * 1000 + (philos->m).tv_usec/1000;
@@ -50,14 +50,14 @@ int eating(to_do *philos)
 				return 0;
 			mutex_events(philos,1);
 			activity(philos, &philos->counttime_eat, &philos->time_eat);
-			mutex_events(philos,2);
-			return (1);
-		}
-		else
-		{
-			pthread_mutex_unlock(&philos->left->fork);
-			pthread_mutex_unlock(&philos->right->fork);
-		}
+		// 	mutex_events(philos,2);
+		// 	return (1);
+		// }
+		// else
+		// {
+		// 	pthread_mutex_unlock(&philos->left->fork);
+		// 	pthread_mutex_unlock(&philos->right->fork);
+		// }
 		return(0);
 }
 
@@ -77,7 +77,7 @@ void activity(  to_do * doa, long int *count,long int *limit  )
 			doa->counttime_die = (doa->m).tv_sec * 1000 + (doa->m).tv_usec/1000  - (doa->time_round_death);
 			// if (deathchecker(doa) == 0)
 			// 	return ;
-			// usleep(1);
+			usleep(1);
 				pthread_mutex_lock(doa->death_lock);
 			if ( *(doa->death_event) == 0 && doa->counttime_die == doa->time_die )
 			{

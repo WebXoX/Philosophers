@@ -38,7 +38,11 @@ void evenlife (to_do *philos)
 	{
 		int i;
 		if (philos->time_die-philos->time_eat > 0)
-		 i = philos->time_die-philos->time_eat;
+		 i = philos->time_die - philos->time_eat;
+
+		if (philos->time_die - (philos->time_eat + philos->time_sleep) > 0)
+			i = philos->time_die - philos->time_sleep ;
+
 		if (philos->time_die == philos->time_eat)
 			i = 0;
 		usleep(i);

@@ -5,8 +5,10 @@
 void statusprint(to_do *dolist)
 {
 	pthread_mutex_lock(dolist->print_mutex);
-	if( *(dolist->death_event) != 1)
-	{	
+	// pthread_mutex_lock(dolist->death_lock);
+	if( deathchecker(dolist) == 1)
+	{
+		// pthread_mutex_unlock(dolist->death_lock);
 			printf("%ld ms: ", dolist->m.tv_sec * 1000 + dolist->m.tv_usec / 1000 - dolist->time_birth);
 		if (dolist->currentflag == 1)
 		{
@@ -19,6 +21,8 @@ void statusprint(to_do *dolist)
 		if (dolist->currentflag == 3)
 			printf("%d is thinking\n", dolist->numb_philo);
 	}
+	// else
+	// 	pthread_mutex_lock(dolist->death_lock);
 	pthread_mutex_unlock(dolist->print_mutex);
 
 }
@@ -32,12 +36,12 @@ int eating(to_do *philos)
 			return 0;
 		}
 		pthread_mutex_unlock(philos->eat_lock);
-		pthread_mutex_lock(&philos->left->fork);
 		pthread_mutex_lock(&philos->right->fork);
+		pthread_mutex_lock(&philos->left->fork);
 	if(philos->right->i == 1 && philos->left->i == 1)
 		{
-			pthread_mutex_unlock(&philos->left->fork);
 			pthread_mutex_unlock(&philos->right->fork);
+			pthread_mutex_unlock(&philos->left->fork);
 			gettimeofday(&(philos->m), &(philos->y));
 			philos->counttime_die = 0;
 			philos->time_round_death = (philos->m).tv_sec * 1000 + (philos->m).tv_usec/1000;
@@ -63,8 +67,8 @@ void activity(  to_do * doa, long int *count,long int *limit  )
 	gettimeofday(&(doa->m), &(doa->y));
 		doa->time_round = (doa->m).tv_sec * 1000 + (doa->m).tv_usec / 1000;
 		*count = (doa->m).tv_sec * 1000 + (doa->m).tv_usec / 1000  - (doa->time_round);
-	 	// if (deathchecker(doa)==0)
-		// 		return ;
+	 	if (deathchecker(doa)==0)
+				return ;
 		statusprint(doa);
 		while( *count < *limit)
 		{
@@ -73,7 +77,7 @@ void activity(  to_do * doa, long int *count,long int *limit  )
 			doa->counttime_die = (doa->m).tv_sec * 1000 + (doa->m).tv_usec/1000  - (doa->time_round_death);
 			// if (deathchecker(doa) == 0)
 			// 	return ;
-			usleep(1);
+			// usleep(1);
 				pthread_mutex_lock(doa->death_lock);
 			if ( *(doa->death_event) == 0 && doa->counttime_die == doa->time_die )
 			{
@@ -96,6 +100,6 @@ void activity(  to_do * doa, long int *count,long int *limit  )
 		doa->currentflag++;
 	else if( doa->currentflag == 3)
 		doa->currentflag = 1;
-	
+
 	// usleep(5);
 }
