@@ -6,7 +6,7 @@
 /*   By: jperinch <jperinch@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 08:29:34 by jperinch          #+#    #+#             */
-/*   Updated: 2023/07/26 13:42:20 by jperinch         ###   ########.fr       */
+/*   Updated: 2023/07/26 12:55:19 by jperinch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,8 @@ int main (int argv, char *argc[])
 
 	if ((argv == 5 || argv == 6) && checker(argc) == 1)
 	{
+		if (atoi(argc[1]) == 0 || atoi(argc[2]) == 0 || atoi(argc[3]) == 0)
+			return 0;
         dolist = malloc(sizeof(to_do)*(atoi(argc[1])));
         forkes = malloc(sizeof(t_fork)*(atoi(argc[1])));
 		if(forkmanup(forkes,atoi(argc[1]),1) == 1)

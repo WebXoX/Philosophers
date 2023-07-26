@@ -30,19 +30,19 @@ void evenlife (to_do *philos)
 		{
 			activity(philos, &philos->counttime_thinking, &philos->time_thinking);
 					// philos->currentflag = 1;
-		}
+		}	
 		else if ( philos->currentflag == 4)
 			return ;
 	}
 	else
 	{
-		int i;
+		int i;	
 		if (philos->time_die-philos->time_eat > 0)
 		 i = philos->time_die-philos->time_eat;
 		if (philos->time_die == philos->time_eat)
 			i = 0;
 		usleep(i);
-	}
+	} 
 }
 
 void oddlife (to_do *philos)
@@ -61,11 +61,11 @@ void oddlife (to_do *philos)
 		{
 			activity(philos, &philos->counttime_thinking, &philos->time_thinking);
 					// philos->currentflag = 1;
-		}
+		}	
 		else if ( philos->currentflag == 4)
 			return ;
 	}
-}
+}	
 
 // void life( to_do *philos)
 // {
@@ -80,7 +80,7 @@ void oddlife (to_do *philos)
 void *routine( void *philo_invoid)
 {
 	to_do philo_rising;
-
+	
 	philo_rising = * (to_do *) philo_invoid;
 	while (deathchecker(&philo_rising) == 1)
 	{
@@ -90,12 +90,12 @@ void *routine( void *philo_invoid)
 	{
 		pthread_mutex_unlock(philo_rising.eat_lock);
 		break;
-	}
+	}	
 	else
 		pthread_mutex_unlock(philo_rising.eat_lock);
 	evenlife(&philo_rising);
 	oddlife(&philo_rising);
-	// printf("hi");
+	
 	}
 		// pthread_mutex_unlock(philo_rising.eat_lock);
 

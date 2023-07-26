@@ -59,7 +59,7 @@ void philo_utils_inint(to_do dolist[], t_fork *forkes, char* argc[],int length)
 	pthread_mutex_t eat_lock;
     int             death;
 
-    death = 0;
+    death = 0;	
 	i = -1;
     if(pthread_mutex_init(&(printer_lock),NULL) != 0 )
             return ;
