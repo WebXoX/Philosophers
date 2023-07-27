@@ -74,6 +74,7 @@ void *routine( void *philo_invoid);
 int eating(to_do *philos);
 void activity(  to_do * doa, long int *count,long int *limit  );
 void statusprint(to_do *dolist);
+void ft_usleep( int limit, to_do *philo );
 
 
 

@@ -45,11 +45,12 @@ void evenlife (to_do *philos)
 		// printf("%d philo entered i: %d\n", philos->numb_philo,i);
 
 		if (philos->time_die - (philos->time_eat + philos->time_sleep) > 0)
-			i = philos->time_die - (philos->time_eat + philos->time_sleep);
+			i =philos->time_eat + philos->time_sleep;
 
 		if (philos->time_die == philos->time_eat)
-			i = 0;
-		usleep(i);
+			i = 0  ;
+		ft_usleep(i,philos);
+		// usleep(i);
 	} 
 }
 

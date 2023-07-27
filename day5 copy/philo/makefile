@@ -16,7 +16,7 @@ NAME = philo
 SRC = 	inint.c  main.c    mutex_events.c  threadjob.c todo.c
 OBJ	= $(SRC:.c=.o)
 
-CFLAGS = -pthread  -g3 -Wall -Wextra -Werror  -fsanitize=thread
+CFLAGS = -pthread  -g3 -Wall -Wextra -Werror # -fsanitize=thread
 CC = gcc
 
 

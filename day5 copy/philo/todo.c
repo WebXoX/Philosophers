@@ -36,28 +36,28 @@ int eating(to_do *philos)
 			return 0;
 		}
 		pthread_mutex_unlock(philos->eat_lock);
-		pthread_mutex_lock(&philos->right->fork);
-		pthread_mutex_lock(&philos->left->fork);
-	if(philos->right->i == 1 && philos->left->i == 1)
-		{
-			pthread_mutex_unlock(&philos->right->fork);
-			pthread_mutex_unlock(&philos->left->fork);
-			gettimeofday(&(philos->m), &(philos->y));
-			philos->counttime_die = 0;
-			philos->time_round_death = (philos->m).tv_sec * 1000 + (philos->m).tv_usec/1000;
+		// pthread_mutex_lock(&philos->right->fork);
+		// pthread_mutex_lock(&philos->left->fork);
+	// if(philos->right->i == 1 && philos->left->i == 1)
+	// 	{
+	// 		pthread_mutex_unlock(&philos->right->fork);
+	// 		pthread_mutex_unlock(&philos->left->fork);
+	// 		gettimeofday(&(philos->m), &(philos->y));
+	// 		philos->counttime_die = 0;
+	// 		philos->time_round_death = (philos->m).tv_sec * 1000 + (philos->m).tv_usec/1000;
 
-			if (deathchecker(philos) == 0)
-				return 0;
+			// if (deathchecker(philos) == 0)
+			// 	return 0;
 			mutex_events(philos,1);
-			activity(philos, &philos->counttime_eat, &philos->time_eat);
-			mutex_events(philos,2);
-			return (1);
-		}
-		else
-		{
-			pthread_mutex_unlock(&philos->left->fork);
-			pthread_mutex_unlock(&philos->right->fork);
-		}
+			// activity(philos, &philos->counttime_eat, &philos->time_eat);
+		// 	mutex_events(philos,2);
+		// 	return (1);
+		// }
+		// else
+		// {
+		// 	pthread_mutex_unlock(&philos->left->fork);
+		// 	pthread_mutex_unlock(&philos->right->fork);
+		// }
 		return(0);
 }
 
@@ -102,4 +102,29 @@ void activity(  to_do * doa, long int *count,long int *limit  )
 		doa->currentflag = 1;
 
 	// usleep(5);
+}
+
+
+void ft_usleep( int limit, to_do *philo )
+{
+	struct timeval	m;
+	struct timezone	y;
+	long int current_time;
+	long int loop_time;
+	long int count;
+	
+	// philo->numb_philo = philo->numb_philo;
+	gettimeofday(&m, &y);
+		current_time = (m).tv_sec * 1000 + (m).tv_usec / 1000;
+		loop_time = (m).tv_sec * 1000 + (m).tv_usec / 1000;
+	 	if (deathchecker(philo)==0)
+				return ;
+		while( count < limit)
+		{
+			if (deathchecker(philo) == 0)
+				return ;
+			gettimeofday(&(m), &(y));
+			loop_time = (m).tv_sec * 1000 + (m).tv_usec/1000 ;
+			count = loop_time - current_time;
+		}
 }
