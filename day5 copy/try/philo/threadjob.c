@@ -40,7 +40,7 @@ void evenlife (to_do *philos)
 	}
 	else
 	{
-		ft_usleep(1,philos);
+		ft_usleep(5,philos);
 	}
 }
 
@@ -70,7 +70,7 @@ void oddlife (to_do *philos)
 	}
 	else
 	{
-		ft_usleep(1,philos);
+		ft_usleep(5,philos);
 	}
 }
 

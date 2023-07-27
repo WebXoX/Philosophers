@@ -65,7 +65,7 @@ void mutex_events(to_do *philos, int flag)
 		pthread_mutex_unlock(&philos->left->fork);
 		pthread_mutex_unlock(&philos->right->fork);
 		if (philos->time_die > philos->time_eat )
-		 	i =  philos->time_eat - 1;
+		 	i =  philos->time_eat - 5 ;
 		if (philos->time_die == philos->time_eat)
 			i = 0  ;
 		i = 0  ;
@@ -106,7 +106,7 @@ void mutex_events2(to_do *philos, int flag)
 		pthread_mutex_unlock(&philos->left->fork);
 		pthread_mutex_unlock(&philos->right->fork);
 		if (philos->time_die > philos->time_eat )
-		 	i =  philos->time_eat - 1;
+		 	i =  philos->time_eat - 5;
 		if (philos->time_die == philos->time_eat)
 			i = 0  ;
 		i = 0  ;

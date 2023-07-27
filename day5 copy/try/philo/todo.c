@@ -151,7 +151,7 @@ void ft_usleep( int limit, to_do *philo )
 			loop_time = (m).tv_sec * 1000 + (m).tv_usec/1000 ;
 			count = loop_time - current_time;
 			philo->counttime_die = (philo->m).tv_sec * 1000 + (philo->m).tv_usec/1000  - (philo->time_round_death);
-					printf("%ld ms\n",  philo->counttime_die);
+			// printf("%ld ms\n", loop_time current_time);
 
 			pthread_mutex_lock(philo->death_lock);
 			if ( *(philo->death_event) == 0 && philo->counttime_die == philo->time_die )
