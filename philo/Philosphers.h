@@ -6,7 +6,7 @@
 /*   By: jperinch <jperinch@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/12 09:27:52 by jperinch          #+#    #+#             */
-/*   Updated: 2023/07/28 12:10:34 by jperinch         ###   ########.fr       */
+/*   Updated: 2023/07/28 12:49:20 by jperinch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ void evenlife (to_do *philos);
 void oddlife (to_do *philos);
 void life( to_do *philos);
 void *routine( void *philo_invoid);
-int eating(to_do *philos);
+int eating(to_do *philos, int flag);
 int eating2(to_do *philos);
 void activity(  to_do * doa, long int *count,long int *limit  );
 void statusprint(to_do *dolist);

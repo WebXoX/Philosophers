@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   inint.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jperinch <jperinch@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/07/28 12:48:07 by jperinch          #+#    #+#             */
+/*   Updated: 2023/07/28 12:48:16 by jperinch         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "Philosphers.h"
 
 void inint_fork_placement( to_do *dolist, t_fork *fork, int i)
@@ -23,35 +35,37 @@ int forkmanup(t_fork *forkes, int len, int flag)
 	int i;
 
 	i = -1;
-	if ( flag == 1)
+	if (flag == 1)
 	while (++i < len)
 	{
 		forkes[i].i = 1;
 		forkes[i].forkid = i + 1;
-		if(pthread_mutex_init(&((forkes[i].fork)),NULL) != 0)
+		if (pthread_mutex_init(&((forkes[i].fork)),NULL) != 0)
 			return (1);
 	}
 	if ( flag == 2)
 		while (++i < len)
 			if(pthread_mutex_destroy(&((forkes[i].fork))) != 0)
 				return (1);
-	if ( flag == 3)
-		if(pthread_mutex_destroy(&((forkes[i].fork))) != 0)
+	if (flag == 3)
+		if (pthread_mutex_destroy(&((forkes[i].fork))) != 0)
 				return (1);
 	return (0);
 }
 void	setdolist(to_do *dolist, char *argc[], int i)
 {
-	dolist->totoal_numb_philo = atoi(argc[1]);
+	int status;
+
+	dolist->totoal_numb_philo = ft_atoi(argc[1],&status,1);
 	dolist->numb_philo = i+1;
-	dolist->time_eat = atoi(argc[3]);
-	dolist->time_sleep = atoi(argc[4]);
-	dolist->time_die = atoi(argc[2]);
+	dolist->time_eat = ft_atoi(argc[3],&status,1);
+	dolist->time_sleep = ft_atoi(argc[4],&status,1);
+	dolist->time_die = ft_atoi(argc[2],&status,1);
 
 	if (dolist->time_eat == dolist->time_sleep )
 		dolist->time_thinking =0;
 	else if(dolist->time_eat > dolist->time_sleep)
-		dolist->time_thinking = (dolist->time_eat - dolist->time_sleep);
+		dolist->time_thinking = (dolist->time_eat - dolist->time_sleep)-1;
 	else if(dolist->time_die - (dolist->time_eat + dolist->time_sleep ) > 0)
 		dolist->time_thinking = dolist->time_die - (dolist->time_eat + dolist->time_sleep)-1;
 	else
@@ -59,8 +73,8 @@ void	setdolist(to_do *dolist, char *argc[], int i)
 
 	if (argc[5])
 	{
-		dolist->meal_plan = atoi(argc[5])* atoi(argc[1]);
-		dolist->individual_meal_plan = atoi(argc[5]);
+		dolist->meal_plan = ft_atoi(argc[5],&status,1)* ft_atoi(argc[1],&status,1);
+		dolist->individual_meal_plan = ft_atoi(argc[5],&status,1);
 		dolist->individual_meal_eaten = 0;
 	}
 	else
@@ -77,12 +91,12 @@ void philo_utils_inint(to_do *dolist, t_fork *forkes, char* argc[],int length)
 
     death = 0;	
 	i = -1;
-    if(pthread_mutex_init(&(printer_lock),NULL) != 0 )
+    if(pthread_mutex_init(&(printer_lock),NULL) != 0 && pthread_mutex_init(&(death_lock),NULL) != 0 && pthread_mutex_init(&(eat_lock),NULL) != 0)
             return ;
-	if (pthread_mutex_init(&(death_lock),NULL) != 0 )
-            return ;
-	if (pthread_mutex_init(&(eat_lock),NULL) != 0)
-            return ;
+	// if ()
+    //         return ;
+	// if (pthread_mutex_init(&(eat_lock),NULL) != 0)
+    //         return ;
 	inint_fork_placement(dolist,forkes,length);
 	while (++i < length)
 	{

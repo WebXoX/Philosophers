@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   threadjob.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jperinch <jperinch@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/07/28 12:48:38 by jperinch          #+#    #+#             */
+/*   Updated: 2023/07/28 12:48:39 by jperinch         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "Philosphers.h"
 
 int deathchecker (to_do *philo)
@@ -37,12 +49,17 @@ void evenlife (to_do *philos)
 		else if ( philos->currentflag == 4)
 			return ;
 	}
+	// else
+	// {
+	// 	// if( philos->time_eat != philos->time_sleep)
+	// 		ft_usleep(1,philos);
+	// }
 }
 
 void oddlife (to_do *philos)
 {
-	if (philos->totoal_numb_philo == 1)
-		ft_usleep(philos->time_die,philos);
+		if (deathchecker(philos) == 0)
+			return;
 	if(philos->numb_philo % 2 != 0)
 	{
 		if (deathchecker(philos) == 0)
@@ -72,10 +89,8 @@ void *routine( void *philo_invoid)
 	philo_rising = * (to_do *) philo_invoid;
 	while (deathchecker(&philo_rising) == 1)
 	{
-	
 		evenlife(&philo_rising);
 		oddlife(&philo_rising);
-	
 	}
 	return (void *)0;
 }
