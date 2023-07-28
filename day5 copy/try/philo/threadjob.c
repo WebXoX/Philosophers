@@ -39,7 +39,8 @@ void evenlife (to_do *philos)
 	}
 	else
 	{
-		ft_usleep(1,philos);
+		// if( philos->time_eat != philos->time_sleep)
+			ft_usleep(1,philos);
 	}
 }
 
@@ -62,10 +63,11 @@ void oddlife (to_do *philos)
 		else if ( philos->currentflag == 4)
 			return ;
 	}
-	else
-	{
-		ft_usleep(1,philos);
-	}
+	// else
+	// {
+	// 	// if( philos->time_eat != philos->time_sleep)
+	// 		ft_usleep(1,philos);
+	// }
 }
 
 void *routine( void *philo_invoid)
