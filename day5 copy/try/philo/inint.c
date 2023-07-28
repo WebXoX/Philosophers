@@ -53,7 +53,7 @@ void	setdolist(to_do *dolist, char *argc[], int i)
 	else if(dolist->time_eat > dolist->time_sleep)
 		dolist->time_thinking = (dolist->time_eat - dolist->time_sleep);
 	else if(dolist->time_die - (dolist->time_eat + dolist->time_sleep ) > 0)
-		dolist->time_thinking = dolist->time_die - (dolist->time_eat + dolist->time_sleep)-1;
+		dolist->time_thinking = dolist->time_die - (dolist->time_eat + dolist->time_sleep);
 	else
 		dolist->time_thinking = 0;
 

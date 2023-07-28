@@ -6,7 +6,7 @@
 /*   By: jperinch <jperinch@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/28 12:48:42 by jperinch          #+#    #+#             */
-/*   Updated: 2023/07/28 13:01:31 by jperinch         ###   ########.fr       */
+/*   Updated: 2023/07/28 13:16:14 by jperinch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,14 +17,6 @@
 void statusprint(to_do *dolist)
 {
 	pthread_mutex_lock(dolist->print_mutex);
-	// pthread_mutex_lock(dolist->death_lock);
-	// printf("meal :%d philo : %d\n ",dolist->individual_meal_eaten, dolist->numb_philo);
-	// if (dolist->individual_meal_eaten == dolist->individual_meal_plan )
-	// {
-	// 	pthread_mutex_unlock(dolist->print_mutex);
-	// 	return ;
-	// }	
-		
 	if( deathchecker(dolist) == 1)
 	{
 		// pthread_mutex_unlock(dolist->death_lock);
@@ -40,8 +32,6 @@ void statusprint(to_do *dolist)
 		else if (dolist->currentflag == 3)
 			printf("%d is thinking\n", dolist->numb_philo);
 	}
-	// else
-	// 	pthread_mutex_lock(dolist->death_lock);
 	pthread_mutex_unlock(dolist->print_mutex);
 
 }
@@ -66,7 +56,7 @@ void activity(  to_do * doa, long int *count,long int *limit  )
 			gettimeofday(&(doa->m), &(doa->y));
 			*count = (doa->m).tv_sec * 1000 + (doa->m).tv_usec/1000  - (doa->time_round);
 			doa->counttime_die = (doa->m).tv_sec * 1000 + (doa->m).tv_usec/1000  - (doa->time_round_death);
-				pthread_mutex_lock(doa->death_lock);
+			pthread_mutex_lock(doa->death_lock);
 			if ( *(doa->death_event) == 0 && doa->counttime_die == doa->time_die )
 			{
 					*(doa->death_event) = 1;
