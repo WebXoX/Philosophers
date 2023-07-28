@@ -6,7 +6,7 @@
 /*   By: jperinch <jperinch@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/28 12:48:42 by jperinch          #+#    #+#             */
-/*   Updated: 2023/07/28 12:48:43 by jperinch         ###   ########.fr       */
+/*   Updated: 2023/07/28 13:01:31 by jperinch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,39 +87,31 @@ void activity(  to_do * doa, long int *count,long int *limit  )
 }
 
 
-void ft_usleep( int limit, to_do *philo )
+void ft_usleep( int limit, to_do *philo,long int count, long int loop_time)
 {
-
 	long int current_time;
-	long int loop_time;
-	long int count;
-
-	count = 0;
-	// philo->numb_philo = philo->numb_philo;
+	
 	gettimeofday(&(philo->m), &(philo->y));
-		current_time = (philo->m).tv_sec * 1000 + (philo->m).tv_usec / 1000;
-		loop_time = (philo->m).tv_sec * 1000 + (philo->m).tv_usec / 1000;
-	 	if (deathchecker(philo)==0)
-				return ;
-		while( count < limit)
+	current_time = (philo->m).tv_sec * 1000 + (philo->m).tv_usec / 1000;
+	loop_time = (philo->m).tv_sec * 1000 + (philo->m).tv_usec / 1000;
+	while( count < limit && deathchecker(philo)==0)
+	{
+		gettimeofday(&(philo->m), &(philo->y));
+		loop_time = (philo->m).tv_sec * 1000 + (philo->m).tv_usec/1000 ;
+		count = loop_time - current_time;
+		philo->counttime_die = (philo->m).tv_sec * 1000 + (philo->m).tv_usec/1000  - (philo->time_round_death);
+		pthread_mutex_lock(philo->death_lock);
+		if ( *(philo->death_event) == 0 && philo->counttime_die == philo->time_die )
 		{
-			gettimeofday(&(philo->m), &(philo->y));
-			loop_time = (philo->m).tv_sec * 1000 + (philo->m).tv_usec/1000 ;
-			count = loop_time - current_time;
-			philo->counttime_die = (philo->m).tv_sec * 1000 + (philo->m).tv_usec/1000  - (philo->time_round_death);
-
-			pthread_mutex_lock(philo->death_lock);
-			if ( *(philo->death_event) == 0 && philo->counttime_die == philo->time_die )
-			{
-					*(philo->death_event) = 1;
-				pthread_mutex_unlock(philo->death_lock);
-					philo->currentflag = 4;
-				pthread_mutex_lock(philo->print_mutex);
-					printf("%ld ms: %d is died\n", philo->m.tv_sec * 1000 + philo->m.tv_usec / 1000 - philo->time_birth, philo->numb_philo);
-				pthread_mutex_unlock(philo->print_mutex);
-				break;
-			}
-			else
-				pthread_mutex_unlock(philo->death_lock);
+				*(philo->death_event) = 1;
+			pthread_mutex_unlock(philo->death_lock);
+				philo->currentflag = 4;
+			pthread_mutex_lock(philo->print_mutex);
+				printf("%ld ms: %d is died\n", philo->m.tv_sec * 1000 + philo->m.tv_usec / 1000 - philo->time_birth, philo->numb_philo);
+			pthread_mutex_unlock(philo->print_mutex);
+			break;
 		}
+		else
+			pthread_mutex_unlock(philo->death_lock);
+	}
 }

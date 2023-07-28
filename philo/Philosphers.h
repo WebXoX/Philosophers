@@ -6,7 +6,7 @@
 /*   By: jperinch <jperinch@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/12 09:27:52 by jperinch          #+#    #+#             */
-/*   Updated: 2023/07/28 12:49:20 by jperinch         ###   ########.fr       */
+/*   Updated: 2023/07/28 13:03:00 by jperinch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,8 +79,8 @@ int eating(to_do *philos, int flag);
 int eating2(to_do *philos);
 void activity(  to_do * doa, long int *count,long int *limit  );
 void statusprint(to_do *dolist);
-void ft_usleep( int limit, to_do *philo );
-int	ft_atoi(const char *nptr, int *status, int sign);
+void ft_usleep( int limit, to_do *philo,long int count)
+void ft_usleep( int limit, to_do *philo,long int count, long int loop_time);
 
 
 
