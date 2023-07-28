@@ -6,7 +6,7 @@
 /*   By: jperinch <jperinch@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 08:29:34 by jperinch          #+#    #+#             */
-/*   Updated: 2023/07/27 15:40:16 by jperinch         ###   ########.fr       */
+/*   Updated: 2023/07/28 11:22:23 by jperinch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,24 +56,25 @@ int	checker(char *ptr[])
 	return (1);
 }
 
-int main (int argv, char *argc[])
+int main (int argc, char *argv[])
 {
 	to_do			*dolist;
 	t_fork			*forkes;
 
-	if ((argv == 5 || argv == 6) && checker(argc) == 1)
+	if ((argc == 5 || argc == 6) && checker(argv) == 1)
 	{
-		if (atoi(argc[1]) == 0 || atoi(argc[2]) == 0 || atoi(argc[3]) == 0)
+		if (atoi(argv[1]) <= 0  || atoi(argv[2]) <= 0 || atoi(argv[3]) <= 0)
 			return 0;
-        dolist = malloc(sizeof(to_do)*(atoi(argc[1])));
-        forkes = malloc(sizeof(t_fork)*(atoi(argc[1])));
-		if(forkmanup(forkes,atoi(argc[1]),1) == 1)
+		
+        dolist = malloc(sizeof(to_do)*(atoi(argv[1])));
+        forkes = malloc(sizeof(t_fork)*(atoi(argv[1])));
+		if(forkmanup(forkes,atoi(argv[1]),1) == 1)
 			return 1;
 
-	    philo_utils_inint( dolist,  forkes,argc, atoi(argc[1]));
+	    philo_utils_inint( dolist,  forkes,argv, atoi(argv[1]));
 		
 
-		if (forkmanup(forkes,atoi(argc[1]),2) == 1)
+		if (forkmanup(forkes,atoi(argv[1]),2) == 1)
 			return 1;
 
 		free(forkes);

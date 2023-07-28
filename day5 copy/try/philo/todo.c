@@ -6,6 +6,13 @@ void statusprint(to_do *dolist)
 {
 	pthread_mutex_lock(dolist->print_mutex);
 	// pthread_mutex_lock(dolist->death_lock);
+	// printf("meal :%d philo : %d\n ",dolist->individual_meal_eaten, dolist->numb_philo);
+	// if (dolist->individual_meal_eaten == dolist->individual_meal_plan )
+	// {
+	// 	pthread_mutex_unlock(dolist->print_mutex);
+	// 	return ;
+	// }	
+		
 	if( deathchecker(dolist) == 1)
 	{
 		// pthread_mutex_unlock(dolist->death_lock);
@@ -100,7 +107,6 @@ void activity(  to_do * doa, long int *count,long int *limit  )
 			doa->counttime_die = (doa->m).tv_sec * 1000 + (doa->m).tv_usec/1000  - (doa->time_round_death);
 			if (deathchecker(doa) == 0)
 				return ;
-			// usleep(1);
 				pthread_mutex_lock(doa->death_lock);
 			if ( *(doa->death_event) == 0 && doa->counttime_die == doa->time_die )
 			{
@@ -114,8 +120,6 @@ void activity(  to_do * doa, long int *count,long int *limit  )
 			}
 			else
 				pthread_mutex_unlock(doa->death_lock);
-
-
 		}
 	// if (*(doa->death_event) == 0)
 	// 			return ;
@@ -130,28 +134,24 @@ void activity(  to_do * doa, long int *count,long int *limit  )
 
 void ft_usleep( int limit, to_do *philo )
 {
-	struct timeval	m;
-	struct timezone	y;
+
 	long int current_time;
 	long int loop_time;
 	long int count;
 
 	count = 0;
 	// philo->numb_philo = philo->numb_philo;
-	gettimeofday(&m, &y);
-		current_time = (m).tv_sec * 1000 + (m).tv_usec / 1000;
-		loop_time = (m).tv_sec * 1000 + (m).tv_usec / 1000;
+	gettimeofday(&(philo->m), &(philo->y));
+		current_time = (philo->m).tv_sec * 1000 + (philo->m).tv_usec / 1000;
+		loop_time = (philo->m).tv_sec * 1000 + (philo->m).tv_usec / 1000;
 	 	if (deathchecker(philo)==0)
 				return ;
 		while( count < limit)
 		{
-			// if (deathchecker(philo) == 0)
-			// 	return ;
-			gettimeofday(&(m), &(y));
-			loop_time = (m).tv_sec * 1000 + (m).tv_usec/1000 ;
+			gettimeofday(&(philo->m), &(philo->y));
+			loop_time = (philo->m).tv_sec * 1000 + (philo->m).tv_usec/1000 ;
 			count = loop_time - current_time;
 			philo->counttime_die = (philo->m).tv_sec * 1000 + (philo->m).tv_usec/1000  - (philo->time_round_death);
-			// printf("%ld ms\n", loop_time current_time);
 
 			pthread_mutex_lock(philo->death_lock);
 			if ( *(philo->death_event) == 0 && philo->counttime_die == philo->time_die )
@@ -165,6 +165,6 @@ void ft_usleep( int limit, to_do *philo )
 				break;
 			}
 			else
-			pthread_mutex_unlock(philo->death_lock);
+				pthread_mutex_unlock(philo->death_lock);
 		}
 }

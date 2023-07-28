@@ -6,7 +6,7 @@
 /*   By: jperinch <jperinch@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/12 09:27:52 by jperinch          #+#    #+#             */
-/*   Updated: 2023/07/26 09:31:52 by jperinch         ###   ########.fr       */
+/*   Updated: 2023/07/28 11:03:19 by jperinch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ typedef struct to_do
 {
 
 	int				numb_philo;
+	int				totoal_numb_philo;
 	long int		time_birth;
 	long int		time_round;
 	long int		time_round_death;
@@ -47,6 +48,8 @@ typedef struct to_do
 	int 			currentflag;
 	int 			*death_event;
 	int				meal_plan;
+	int				individual_meal_plan;
+	int				individual_meal_eaten;
 	int				*meal_eaten;
     pthread_t		t;
 	t_fork			*left;
@@ -64,7 +67,7 @@ int	checker(char *ptr[]);
 void inint_fork_placement( to_do *dolist, t_fork *fork, int i);
 int forkmanup(t_fork *forkes, int len, int flag);
 void	setdolist(to_do *dolist, char *argc[], int i);
-void philo_utils_inint(to_do dolist[], t_fork *forkes, char* argc[],int length);
+void philo_utils_inint(to_do *dolist, t_fork *forkes, char* argc[],int length);
 void mutex_events(to_do *philos, int flag);
 void mutex_events2(to_do *philos, int flag);
 int deathchecker (to_do *philo);

@@ -8,8 +8,10 @@ void inint_fork_placement( to_do *dolist, t_fork *fork, int i)
 	while (++count<i)
 	{
 		(dolist+ count)->right = (fork +count  );
-		if(count == 0)
+		if(count == 0 && i != 1)
 			(dolist+ count)->left = (fork + i - 1);
+		// else if (i == 1)
+		// 	(dolist+ count)->left = (void*)0;
 		else
 			(dolist+ count)->left = (fork + count - 1);
 	}
@@ -40,18 +42,30 @@ int forkmanup(t_fork *forkes, int len, int flag)
 }
 void	setdolist(to_do *dolist, char *argc[], int i)
 {
+	dolist->totoal_numb_philo = atoi(argc[1]);
 	dolist->numb_philo = i+1;
 	dolist->time_eat = atoi(argc[3]);
 	dolist->time_sleep = atoi(argc[4]);
 	dolist->time_die = atoi(argc[2]);
-	dolist->time_thinking = 0;
+
+	if (dolist->time_eat == dolist->time_sleep )
+		dolist->time_thinking =0;
+	else if(dolist->time_die - (dolist->time_eat + dolist->time_sleep ) > 0)
+		dolist->time_thinking = dolist->time_die - (dolist->time_eat + dolist->time_sleep)-1;
+	else
+		dolist->time_thinking = 0;
+
 	if (argc[5])
+	{
 		dolist->meal_plan = atoi(argc[5])* atoi(argc[1]);
+		dolist->individual_meal_plan = atoi(argc[5]);
+		dolist->individual_meal_eaten = 0;
+	}
 	else
 		dolist->meal_plan = 0;
 }
 
-void philo_utils_inint(to_do dolist[], t_fork *forkes, char* argc[],int length)
+void philo_utils_inint(to_do *dolist, t_fork *forkes, char* argc[],int length)
 {
 	int i;
 	pthread_mutex_t printer_lock;

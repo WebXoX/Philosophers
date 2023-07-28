@@ -38,10 +38,10 @@ void evenlife (to_do *philos)
 		else if ( philos->currentflag == 4)
 			return ;
 	}
-	else
-	{
-		ft_usleep(1,philos);
-	}
+	// else
+	// {
+	// 	ft_usleep(1,philos);
+	// }
 }
 
 void oddlife (to_do *philos)
@@ -68,10 +68,10 @@ void oddlife (to_do *philos)
 		else if ( philos->currentflag == 4)
 			return ;
 	}
-	else
-	{
-		ft_usleep(1,philos);
-	}
+	// else
+	// {
+	// 	ft_usleep(1,philos);
+	// }
 }
 
 // void life( to_do *philos)
