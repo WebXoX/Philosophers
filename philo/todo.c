@@ -36,7 +36,7 @@ void statusprint(to_do *dolist)
 
 }
 
-void eating(to_do *philos, int flag)
+int eating(to_do *philos, int flag)
 {
 	if (flag == 1)
 			mutex_events(philos,1);
@@ -51,7 +51,7 @@ void activity(  to_do * doa, long int *count,long int *limit  )
 		doa->time_round = (doa->m).tv_sec * 1000 + (doa->m).tv_usec / 1000;
 		*count = (doa->m).tv_sec * 1000 + (doa->m).tv_usec / 1000  - (doa->time_round);
 		statusprint(doa);
-		while ( *count < *limit && deathchecker(doa == 0))
+		while ( *count < *limit && deathchecker(doa )== 0)
 		{
 			gettimeofday(&(doa->m), &(doa->y));
 			*count = (doa->m).tv_sec * 1000 + (doa->m).tv_usec/1000  - (doa->time_round);

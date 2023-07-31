@@ -74,11 +74,10 @@ void mutex_events(to_do *philos, int flag)
 		// pthread_mutex_unlock(philos->print_mutex);
 
 
-		// if (philos->time_die > philos->time_eat )
-		//  	i =  philos->time_eat;
-		// if (philos->time_die == philos->time_eat)
-		// 	i = 0  ;
-		// ft_usleep(i,philos);
+		if (philos->time_die > philos->time_eat )
+			ft_usleep(1,philos);
+		if (philos->time_die == philos->time_eat)
+			ft_usleep(0,philos);
 	}
 
 }
@@ -122,7 +121,10 @@ void mutex_events2(to_do *philos, int flag)
 		//  	i =  philos->time_eat;
 		// if (philos->time_die == philos->time_eat)
 		// 	i = 0  ;
-		// ft_usleep(i,philos);
+		if (philos->time_eat > philos->time_sleep )
+			ft_usleep(1,philos);
+		if (philos->time_die == philos->time_eat)
+			ft_usleep(0,philos);
 	}
 
 }

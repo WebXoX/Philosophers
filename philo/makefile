@@ -13,7 +13,7 @@
 
 NAME = philo
 
-SRC = 	inint.c  main.c    mutex_events.c  threadjob.c todo.c
+SRC = 	inint.c  main.c    mutex_events.c  threadjob.c todo.c ft_atoi.c
 OBJ	= $(SRC:.c=.o)
 
 CFLAGS = -pthread  -g3 -Wall -Wextra -Werror #-fsanitize=thread

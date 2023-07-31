@@ -76,10 +76,11 @@ void oddlife (to_do *philos);
 void life( to_do *philos);
 void *routine( void *philo_invoid);
 int eating(to_do *philos, int flag);
-int eating2(to_do *philos);
+// int eating2(to_do *philos);
 void activity(  to_do * doa, long int *count,long int *limit  );
 void statusprint(to_do *dolist);
 void ft_usleep( int limit, to_do *philo,long int count, long int loop_time);
+int	ft_atoi(const char *nptr, int *status, int sign);
 
 
 

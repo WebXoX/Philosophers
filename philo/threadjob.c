@@ -38,7 +38,7 @@ void evenlife (to_do *philos)
 			return;
 
 		else if ( philos->currentflag == 1 )
-			eating(philos);
+			eating(philos, 1);
 		else if ( philos->currentflag == 2)
 			activity(philos, &philos->counttime_sleep, &philos->time_sleep);
 		else if ( philos->currentflag == 3)
@@ -65,7 +65,7 @@ void oddlife (to_do *philos)
 		if (deathchecker(philos) == 0)
 			return;
 		else if ( philos->currentflag == 1 )
-			eating2(philos);
+			eating(philos, 2);
 		else if ( philos->currentflag == 2)
 			activity(philos, &philos->counttime_sleep, &philos->time_sleep);
 		else if ( philos->currentflag == 3)

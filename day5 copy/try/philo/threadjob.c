@@ -26,9 +26,11 @@ void evenlife (to_do *philos)
 			return;
 
 		else if ( philos->currentflag == 1 )
+		{
 			eating(philos);
-		else if ( philos->currentflag == 2)
-			activity(philos, &philos->counttime_sleep, &philos->time_sleep);
+			if ( philos->currentflag == 2 )
+				activity(philos, &philos->counttime_sleep, &philos->time_sleep);
+		}
 		else if ( philos->currentflag == 3)
 		{
 			activity(philos, &philos->counttime_thinking, &philos->time_thinking);
@@ -36,6 +38,11 @@ void evenlife (to_do *philos)
 		}
 		else if ( philos->currentflag == 4)
 			return ;
+	}
+	else
+	{
+		// if( philos->time_eat != philos->time_sleep)
+			ft_usleep(1,philos);
 	}
 }
 
@@ -58,11 +65,11 @@ void oddlife (to_do *philos)
 		else if ( philos->currentflag == 4)
 			return ;
 	}
-	// else
-	// {
-	// 	// if( philos->time_eat != philos->time_sleep)
-	// 		ft_usleep(1,philos);
-	// }
+	else
+	{
+		// if( philos->time_eat != philos->time_sleep)
+			ft_usleep(1,philos);
+	}
 }
 
 void *routine( void *philo_invoid)
@@ -73,8 +80,8 @@ void *routine( void *philo_invoid)
 	while (deathchecker(&philo_rising) == 1)
 	{
 	
-		evenlife(&philo_rising);
 		oddlife(&philo_rising);
+		evenlife(&philo_rising);
 	
 	}
 	return (void *)0;

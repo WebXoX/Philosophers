@@ -47,24 +47,26 @@ void	setdolist(to_do *dolist, char *argc[], int i)
 	dolist->time_eat = atoi(argc[3]);
 	dolist->time_sleep = atoi(argc[4]);
 	dolist->time_die = atoi(argc[2]);
-
-	if (dolist->time_eat == dolist->time_sleep )
-		dolist->time_thinking =0;
-	else if(dolist->time_eat > dolist->time_sleep)
-		dolist->time_thinking = (dolist->time_eat - dolist->time_sleep);
-	else if(dolist->time_die - (dolist->time_eat + dolist->time_sleep ) > 0)
-		dolist->time_thinking = dolist->time_die - (dolist->time_eat + dolist->time_sleep);
-	else
+	if (dolist->time_eat == dolist->time_sleep)
 		dolist->time_thinking = 0;
-
+	if(dolist->time_eat > dolist->time_sleep)
+		dolist->time_thinking = (dolist->time_eat - dolist->time_sleep) ;
+	// if(dolist->time_die - (dolist->time_eat + dolist->time_sleep ) < dolist->time_eat)
+	// 	dolist->time_thinking = dolist->time_die - (dolist->time_eat + dolist->time_sleep);
+	// else
+	// 	dolist->time_thinking = 0;
 	if (argc[5])
 	{
 		dolist->meal_plan = atoi(argc[5])* atoi(argc[1]);
 		dolist->individual_meal_plan = atoi(argc[5]);
-		dolist->individual_meal_eaten = 0;
 	}
 	else
+	{
 		dolist->meal_plan = 0;
+		dolist->individual_meal_plan = 0;
+	}
+		dolist->individual_meal_eaten = 0;
+		dolist->meal_eaten = 0;
 }
 
 void philo_utils_inint(to_do *dolist, t_fork *forkes, char* argc[],int length)
