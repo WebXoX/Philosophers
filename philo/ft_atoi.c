@@ -6,7 +6,7 @@
 /*   By: jperinch <jperinch@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/15 08:26:28 by jperinch          #+#    #+#             */
-/*   Updated: 2023/07/28 12:48:17 by jperinch         ###   ########.fr       */
+/*   Updated: 2023/07/31 12:17:35 by jperinch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,6 @@ int	ft_atoi(const char *nptr, int *status, int sign)
 	i = spacexsign(nptr, 0, &sign);
 	while (nptr[i] != '\0')
 	{
-		
 		if (nptr[i] >= '0' && nptr[i] <= '9')
 			result = result * 10 + (nptr[i] - '0');
 		else

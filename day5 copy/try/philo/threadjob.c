@@ -49,7 +49,10 @@ void evenlife (to_do *philos)
 void oddlife (to_do *philos)
 {
 	if (philos->totoal_numb_philo == 1)
+	{
+		printf("hi");
 		ft_usleep(philos->time_die,philos);
+	}
 	if(philos->numb_philo % 2 != 0)
 	{
 		if (deathchecker(philos) == 0)
@@ -79,7 +82,6 @@ void *routine( void *philo_invoid)
 	philo_rising = * (to_do *) philo_invoid;
 	while (deathchecker(&philo_rising) == 1)
 	{
-	
 		oddlife(&philo_rising);
 		evenlife(&philo_rising);
 	

@@ -6,31 +6,28 @@
 /*   By: jperinch <jperinch@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/12 09:27:52 by jperinch          #+#    #+#             */
-/*   Updated: 2023/07/28 13:05:12 by jperinch         ###   ########.fr       */
+/*   Updated: 2023/07/31 12:44:49 by jperinch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PHILOSPHERS_H
 # define PHILOSPHERS_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <strings.h>
-#include <pthread.h>
-#include <sys/time.h>
-#include <unistd.h>
+# include <pthread.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <sys/time.h>
+# include <unistd.h>
 
 typedef struct t_fork
 {
-	pthread_mutex_t fork;
+	pthread_mutex_t	fork;
 	int				i;
-	int 		forkid;
-}				t_fork;
+	int				forkid;
+}					t_fork;
 
 typedef struct to_do
 {
-
 	int				numb_philo;
 	int				totoal_numb_philo;
 	long int		time_birth;
@@ -45,43 +42,41 @@ typedef struct to_do
 	long int		counttime_sleep;
 	long int		counttime_thinking;
 	long int		counttime_die;
-	int 			currentflag;
-	int 			*death_event;
+	int				currentflag;
+	int				*death_event;
 	int				meal_plan;
 	int				individual_meal_plan;
 	int				individual_meal_eaten;
 	int				*meal_eaten;
-    pthread_t		t;
+	pthread_t		t;
 	t_fork			*left;
 	t_fork			*right;
-	pthread_mutex_t *print_mutex;
-	pthread_mutex_t *death_lock;
-	pthread_mutex_t *eat_lock;
-	struct timeval 	m;
-	struct timezone y;
-}				to_do;
+	pthread_mutex_t	*print_mutex;
+	pthread_mutex_t	*death_lock;
+	pthread_mutex_t	*eat_lock;
+	struct timeval	m;
+	struct timezone	y;
+}					t_philo;
 
-
-int starter(to_do *dolist , char *argc[], int death);
-int	checker(char *ptr[]);
-void inint_fork_placement( to_do *dolist, t_fork *fork, int i);
-int forkmanup(t_fork *forkes, int len, int flag);
-void	setdolist(to_do *dolist, char *argc[], int i);
-void philo_utils_inint(to_do *dolist, t_fork *forkes, char* argc[],int length);
-void mutex_events(to_do *philos, int flag);
-void mutex_events2(to_do *philos, int flag);
-int deathchecker (to_do *philo);
-void evenlife (to_do *philos);
-void oddlife (to_do *philos);
-void life( to_do *philos);
-void *routine( void *philo_invoid);
-int eating(to_do *philos, int flag);
-// int eating2(to_do *philos);
-void activity(  to_do * doa, long int *count,long int *limit  );
-void statusprint(to_do *dolist);
-void ft_usleep( int limit, to_do *philo,long int count, long int loop_time);
-int	ft_atoi(const char *nptr, int *status, int sign);
-
-
+int					starter(t_philo *dolist, char *argc[], int death);
+int					checker(char *ptr[]);
+void				inint_fork_placement(t_philo *dolist, t_fork *fork, int i);
+int					forkmanup(t_fork *forkes, int len, int flag);
+void				setdolist(t_philo *dolist, char *argc[], int i);
+void				philo_utils_inint(t_philo *dolist, t_fork *forkes,
+						char *argc[], int length);
+void				mutex_events(t_philo *philos);
+void				mutex_events2(t_philo *philos);
+int					deathchecker(t_philo *philo);
+void				evenlife(t_philo *philos);
+void				oddlife(t_philo *philos);
+void				life(t_philo *philos);
+void				*routine(void *philo_invoid);
+int					eating(t_philo *philos, int flag);
+void				activity(t_philo *doa, long int *count, long int *limit);
+void				statusprint(t_philo *dolist);
+void				ft_usleep(int limit, t_philo *philo, long int count,
+						long int loop_time);
+int					ft_atoi(const char *nptr, int *status, int sign);
 
 #endif
